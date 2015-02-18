@@ -10,12 +10,18 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
  * Created by Michael on 2014-03-17.
  */
 public class RemoteCategoryProduct extends RemoteObject {
+
+    public static final String[] IDENTIFIERS = new String[] {
+        CategoryProductTable.CATEGORY_ID,
+        CategoryProductTable.PRODUCT_ID
+    };
 
     private Long mId;
     private Long mCategoryId;
@@ -25,36 +31,20 @@ public class RemoteCategoryProduct extends RemoteObject {
     private RemoteProduct mProduct;
 
     public RemoteCategoryProduct(final Cursor cursor) {
-        setId(cursor.getLong(cursor.getColumnIndex(CategoryProductTable.ID)));
+        super(cursor);
+
         setCategoryId(cursor.getLong(cursor.getColumnIndex(CategoryProductTable.CATEGORY_ID)));
         setProductId(cursor.getLong(cursor.getColumnIndex(CategoryProductTable.PRODUCT_ID)));
     }
 
-    public static List<String> getIdentifierKeys() {
-
-        List<String> keys = new ArrayList<>();
-        keys.add(CategoryProductTable.CATEGORY_ID);
-        keys.add(CategoryProductTable.PRODUCT_ID);
-        return keys;
-    }
-
-
-
     @Override
-    public List<String> getIdentifierValues() {
-        Long categoryId = getCategoryId();
-        Long productId = getProductId();
+    public LinkedHashMap<String, String> getIdentifiers() {
 
-        if( categoryId != null && productId != null )
-        {
-            List<String> values = new ArrayList<>();
-            values.add(categoryId + "");
-            values.add(productId + "");
+        LinkedHashMap<String, String> identifiers = super.getIdentifiers();
+        identifiers.put(IDENTIFIERS[0], getCategoryId() + "");
+        identifiers.put(IDENTIFIERS[1], getProductId() + "");
 
-            return values;
-        }
-
-        return null;
+        return identifiers;
     }
 
 

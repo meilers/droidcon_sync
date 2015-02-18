@@ -1,11 +1,13 @@
 package com.frankandoak.synchronization.activities;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.frankandoak.synchronization.R;
+import com.frankandoak.synchronization.services.SyncCategoryProductsService;
 
 
 public class ProductListActivity extends ActionBarActivity {
@@ -16,6 +18,16 @@ public class ProductListActivity extends ActionBarActivity {
         setContentView(R.layout.activity_product_list);
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Intent intent = new Intent(this, SyncCategoryProductsService.class);
+        intent.setAction(Intent.ACTION_SYNC);
+        intent.putExtra(SyncCategoryProductsService.EXTRAS.IN_CATEGORY_ID, 22L);
+        startService(intent);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

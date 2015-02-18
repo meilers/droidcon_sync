@@ -1,5 +1,6 @@
 package com.frankandoak.synchronization.models;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.frankandoak.synchronization.database.CategoryProductTable;
@@ -10,6 +11,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -17,7 +19,10 @@ import java.util.List;
  */
 public class RemoteCategory extends RemoteObject {
 
-    private Long mId;
+    public static final String[] IDENTIFIERS = new String[] {
+            CategoryTable.CATEGORY_ID
+    };
+
 
     @Expose
     @SerializedName("id")
@@ -32,42 +37,29 @@ public class RemoteCategory extends RemoteObject {
     private String mImageUrl;
 
     public RemoteCategory(final Cursor cursor) {
-        setId(cursor.getLong(cursor.getColumnIndex(CategoryTable.ID)));
+        super(cursor);
+
         setCategoryId(cursor.getLong(cursor.getColumnIndex(CategoryTable.CATEGORY_ID)));
         setName(cursor.getString(cursor.getColumnIndex(CategoryTable.NAME)));
         setImageUrl(cursor.getString(cursor.getColumnIndex(CategoryTable.IMAGE_URL)));
     }
 
-    public static List<String> getIdentifierKeys() {
+    @Override
+    public LinkedHashMap<String, String> getIdentifiers() {
 
-        List<String> keys = new ArrayList<>();
-        keys.add(CategoryTable.CATEGORY_ID);
+        LinkedHashMap<String, String> identifiers = super.getIdentifiers();
+        identifiers.put(IDENTIFIERS[0], getCategoryId()+"");
 
-        return keys;
+        return identifiers;
     }
 
     @Override
-    public List<String> getIdentifierValues() {
-        Long categoryId = getCategoryId();
+    public void populateContentValues(ContentValues values) {
+        super.populateContentValues(values);
 
-        if( categoryId != null )
-        {
-            List<String> values = new ArrayList<>();
-            values.add(categoryId + "");
-
-            return values;
-        }
-
-        return null;
-    }
-
-
-    public Long getId() {
-        return mId;
-    }
-
-    public void setId(Long id) {
-        mId = id;
+        values.put(CategoryTable.CATEGORY_ID, getCategoryId());
+        values.put(CategoryTable.NAME, getName());
+        values.put(CategoryTable.IMAGE_URL, getImageUrl());
     }
 
     public Long getCategoryId() {

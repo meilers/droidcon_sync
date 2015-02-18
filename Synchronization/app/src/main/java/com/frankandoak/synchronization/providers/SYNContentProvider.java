@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.frankandoak.synchronization.database.CategoryProductTable;
 import com.frankandoak.synchronization.database.CategoryTable;
@@ -29,7 +28,7 @@ public class SYNContentProvider extends ContentProvider {
     public static final String SCHEME = "content";
     public static final String AUTHORITY = "com.frankandoak.synchronization.providers.SYNContentProvider";
 
-    public static final class Uris {
+    public static final class URIS {
 
         public static final Uri CATEGORIES_URI = Uri.parse(SCHEME + "://" + AUTHORITY + "/" + Paths.CATEGORIES);
         public static final Uri CATEGORY_PRODUCTS_URI = Uri.parse(SCHEME + "://" + AUTHORITY + "/" + Paths.CATEGORY_PRODUCTS);
@@ -53,8 +52,6 @@ public class SYNContentProvider extends ContentProvider {
 
     private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-    private static HashMap<String, String> sCategoriesProjectionMap;
-    private static HashMap<String, String> sProductsProjectionMap;
     private static HashMap<String, String> sCategoryProductsProjectionMap;
 
     static {
@@ -66,24 +63,28 @@ public class SYNContentProvider extends ContentProvider {
         sURIMatcher.addURI(AUTHORITY, Paths.PRODUCTS + "/#", PRODUCT_ID);
 
         // projections
-        sCategoriesProjectionMap = new HashMap<>();
-        sCategoriesProjectionMap.put(CategoryTable.ID, CategoryTable.FULL_ID);
-        sCategoriesProjectionMap.put(CategoryTable.CATEGORY_ID, CategoryTable.FULL_CATEGORY_ID);
-        sCategoriesProjectionMap.put(CategoryTable.NAME, CategoryTable.FULL_NAME);
-        sCategoriesProjectionMap.put(CategoryTable.IMAGE_URL, CategoryTable.FULL_IMAGE_URL);
-
-        sProductsProjectionMap = new HashMap<>();
-        sProductsProjectionMap.put(ProductTable.ID, ProductTable.FULL_ID);
-        sProductsProjectionMap.put(ProductTable.PRODUCT_ID, ProductTable.FULL_PRODUCT_ID);
-        sProductsProjectionMap.put(ProductTable.SKU, ProductTable.FULL_SKU);
-        sProductsProjectionMap.put(ProductTable.NAME, ProductTable.FULL_NAME);
-        sProductsProjectionMap.put(ProductTable.IMAGE_URL, ProductTable.FULL_IMAGE_URL);
-        sProductsProjectionMap.put(ProductTable.FAVORITE_COUNT, ProductTable.FULL_FAVORITE_COUNT);
 
         sCategoryProductsProjectionMap = new HashMap<>();
-        sCategoryProductsProjectionMap.put(CategoryProductTable.ID, CategoryProductTable.FULL_ID);
+        sCategoryProductsProjectionMap.put(CategoryProductTable._ID, CategoryProductTable.FULL_ID);
         sCategoryProductsProjectionMap.put(CategoryProductTable.CATEGORY_ID, CategoryProductTable.FULL_CATEGORY_ID);
         sCategoryProductsProjectionMap.put(CategoryProductTable.PRODUCT_ID, CategoryProductTable.FULL_PRODUCT_ID);
+
+        sCategoryProductsProjectionMap.put("category_created_at", CategoryTable.FULL_CREATED_AT + " AS " + "category_created_at");
+        sCategoryProductsProjectionMap.put("category_updated_at", CategoryTable.FULL_UPDATED_AT + " AS " + "category_updated_at");
+        sCategoryProductsProjectionMap.put("category_sync_status", CategoryTable.FULL_SYNC_STATUS + " AS " + "category_sync_status");
+        sCategoryProductsProjectionMap.put("category_is_deleted", CategoryTable.FULL_IS_DELETED + " AS " + "category_is_deleted");
+        sCategoryProductsProjectionMap.put("category_name", CategoryTable.FULL_NAME + " AS " + "category_name");
+        sCategoryProductsProjectionMap.put("category_image_url", CategoryTable.FULL_IMAGE_URL + " AS " + "category_image_url");
+
+        sCategoryProductsProjectionMap.put("product_created_at", ProductTable.FULL_CREATED_AT + " AS " + "product_created_at");
+        sCategoryProductsProjectionMap.put("product_updated_at", ProductTable.FULL_CREATED_AT + " AS " + "product_updated_at");
+        sCategoryProductsProjectionMap.put("product_sync_status", ProductTable.FULL_SYNC_STATUS + " AS " + "product_sync_status");
+        sCategoryProductsProjectionMap.put("product_is_deleted", ProductTable.FULL_IS_DELETED + " AS " + "product_is_deleted");
+        sCategoryProductsProjectionMap.put("product_sku", ProductTable.FULL_SKU + " AS " + "product_name");
+        sCategoryProductsProjectionMap.put("product_name", ProductTable.FULL_NAME + " AS " + "product_sku");
+        sCategoryProductsProjectionMap.put("product_image_url", ProductTable.FULL_IMAGE_URL + " AS " + "product_image_url");
+        sCategoryProductsProjectionMap.put("product_price", ProductTable.FULL_PRICE + " AS " + "product_price");
+
     }
 
     // database
@@ -134,7 +135,7 @@ public class SYNContentProvider extends ContentProvider {
         int uriType = sURIMatcher.match(uri);
         switch (uriType) {
             case CATEGORY_ID:
-                queryBuilder.appendWhere(CategoryTable.ID + "="
+                queryBuilder.appendWhere(CategoryTable._ID + "="
                         + uri.getLastPathSegment());
             case CATEGORIES_DIR:
                 queryBuilder.setTables(CategoryTable.TABLE_NAME);
@@ -144,13 +145,13 @@ public class SYNContentProvider extends ContentProvider {
                 groupBy = ProductTable.FULL_PRODUCT_ID;
 
                 queryBuilder.setTables(CategoryProductTable.TABLE_NAME +
+                        " INNER JOIN " + CategoryTable.TABLE_NAME + " ON " +
+                        CategoryProductTable.FULL_CATEGORY_ID + " = " + CategoryTable.FULL_CATEGORY_ID +
                         " INNER JOIN " + ProductTable.TABLE_NAME + " ON " +
-                        CategoryProductTable.FULL_PRODUCT_ID + " = " + ProductTable.FULL_PRODUCT_ID);
+                        CategoryProductTable.FULL_PRODUCT_ID + " = " + ProductTable.FULL_PRODUCT_ID
+                );
 
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
-                projectionMap.putAll(sProductsProjectionMap);
-                projectionMap.putAll(sCategoryProductsProjectionMap); // THIS ABSOLUTELY HAS TO COME SECOND TO OVERRIDE _id
-                queryBuilder.setProjectionMap(projectionMap);
+                queryBuilder.setProjectionMap(sCategoryProductsProjectionMap);
                 queryBuilder.appendWhere(CategoryProductTable.FULL_CATEGORY_ID + "=" + uri.getLastPathSegment());
                 break;
 
@@ -160,7 +161,7 @@ public class SYNContentProvider extends ContentProvider {
 
 
             case PRODUCT_ID:
-                queryBuilder.appendWhere(ProductTable.ID + "="
+                queryBuilder.appendWhere(ProductTable._ID + "="
                         + uri.getLastPathSegment());
             case PRODUCTS_DIR:
                 queryBuilder.setTables(ProductTable.TABLE_NAME);
@@ -205,7 +206,7 @@ public class SYNContentProvider extends ContentProvider {
                     break;
                 case CATEGORY_ID :
                     deleteCount = dbConnection.delete(CategoryTable.TABLE_NAME,
-                            CategoryTable.ID + "=?", new String[]{uri
+                            CategoryTable._ID + "=?", new String[]{uri
                                     .getPathSegments().get(1)});
                     dbConnection.setTransactionSuccessful();
                     break;
@@ -217,7 +218,7 @@ public class SYNContentProvider extends ContentProvider {
                     break;
                 case CATEGORY_PRODUCT_ID :
                     deleteCount = dbConnection.delete(CategoryProductTable.TABLE_NAME,
-                            CategoryProductTable.ID + "=?", new String[]{uri
+                            CategoryProductTable._ID + "=?", new String[]{uri
                                     .getPathSegments().get(1)});
                     dbConnection.setTransactionSuccessful();
                     break;
@@ -229,7 +230,7 @@ public class SYNContentProvider extends ContentProvider {
                     break;
                 case PRODUCT_ID :
                     deleteCount = dbConnection.delete(ProductTable.TABLE_NAME,
-                            ProductTable.ID + "=?", new String[]{uri
+                            ProductTable._ID + "=?", new String[]{uri
                                     .getPathSegments().get(1)});
                     dbConnection.setTransactionSuccessful();
                     break;
@@ -276,7 +277,7 @@ public class SYNContentProvider extends ContentProvider {
                     updateCount = dbConnection.update(
                             CategoryTable.TABLE_NAME,
                             values,
-                            CategoryTable.ID
+                            CategoryTable._ID
                                     + "="
                                     + categoryId
                                     + (TextUtils.isEmpty(selection)
@@ -296,7 +297,7 @@ public class SYNContentProvider extends ContentProvider {
                     updateCount = dbConnection.update(
                             CategoryProductTable.TABLE_NAME,
                             values,
-                            CategoryProductTable.ID
+                            CategoryProductTable._ID
                                     + "="
                                     + categoryProductId
                                     + (TextUtils.isEmpty(selection)
@@ -316,7 +317,7 @@ public class SYNContentProvider extends ContentProvider {
                     updateCount = dbConnection.update(
                             ProductTable.TABLE_NAME,
                             values,
-                            ProductTable.ID
+                            ProductTable._ID
                                     + "="
                                     + productId
                                     + (TextUtils.isEmpty(selection)

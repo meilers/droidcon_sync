@@ -32,14 +32,18 @@ public class SYNDatabaseHelper extends SQLiteOpenHelper {
     // Method is called during creation of the database
     @Override
     public void onCreate(SQLiteDatabase database) {
+        CategoryTable.onCreate(database);
         ProductTable.onCreate(database);
+        CategoryProductTable.onCreate(database);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion,
                           int newVersion) {
 
+        CategoryTable.onUpgrade(database, oldVersion, newVersion);
         ProductTable.onUpgrade(database, oldVersion, newVersion);
+        CategoryProductTable.onUpgrade(database, oldVersion, newVersion);
     }
 
     @Override

@@ -8,11 +8,11 @@ import java.util.List;
 /**
  * Created by Michael on 2014-03-17.
  */
-public class DownloadCategoryProductsResponse {
+public class GetCategoryProductsResponse extends RemoteResponse {
 
     @Expose
     public List<RemoteProduct> response;
 
-    public DownloadCategoryProductsResponse() {}
+    public GetCategoryProductsResponse() {}
 
 }

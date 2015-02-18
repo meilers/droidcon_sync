@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -17,7 +18,10 @@ import java.util.List;
  */
 public class RemoteProduct extends RemoteObject {
 
-    private Long mId;
+    public static final String[] IDENTIFIERS = new String[] {
+            ProductTable.PRODUCT_ID
+    };
+
 
     @Expose
     @SerializedName("id")
@@ -44,11 +48,10 @@ public class RemoteProduct extends RemoteObject {
     private float mPrice;
 
 
-    public RemoteProduct() {}
-
-
     public RemoteProduct(final Cursor cursor) {
-        setId(cursor.getLong(cursor.getColumnIndex(ProductTable.ID)));
+
+        super(cursor);
+
         setProductId(cursor.getLong(cursor.getColumnIndex(ProductTable.PRODUCT_ID)));
         setSku(cursor.getString(cursor.getColumnIndex(ProductTable.SKU)));
         setName(cursor.getString(cursor.getColumnIndex(ProductTable.NAME)));
@@ -57,46 +60,27 @@ public class RemoteProduct extends RemoteObject {
         setPrice(cursor.getFloat(cursor.getColumnIndex(ProductTable.PRICE)));
     }
 
-    public static List<String> getIdentifierKeys() {
+    @Override
+    public LinkedHashMap<String, String> getIdentifiers() {
 
-        List<String> keys = new ArrayList<>();
-        keys.add(ProductTable.PRODUCT_ID);
+        LinkedHashMap<String, String> identifiers = super.getIdentifiers();
+        identifiers.put(IDENTIFIERS[0], getProductId() + "");
 
-        return keys;
+        return identifiers;
     }
 
     @Override
-    public List<String> getIdentifierValues() {
-
-        Long productId = getProductId();
-
-        if( productId != null )
-        {
-            List<String> values = new ArrayList<>();
-            values.add(productId + "");
-
-            return values;
-        }
-
-        return null;
-    }
-
     public void populateContentValues(ContentValues values) {
+        super.populateContentValues(values);
+
         values.put(ProductTable.PRODUCT_ID, getProductId());
         values.put(ProductTable.SKU, getSku());
         values.put(ProductTable.NAME, getName());
         values.put(ProductTable.IMAGE_URL, getImageUrl());
         values.put(ProductTable.FAVORITE_COUNT, getFavoriteCount());
+        values.put(ProductTable.PRICE, getPrice());
     }
 
-
-    public Long getId() {
-        return mId;
-    }
-
-    public void setId(Long id) {
-        mId = id;
-    }
 
     public Long getProductId() {
         return mProductId;

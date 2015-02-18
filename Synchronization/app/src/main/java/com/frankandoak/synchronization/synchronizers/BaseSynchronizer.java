@@ -4,13 +4,20 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.frankandoak.synchronization.database.BaseTable;
 import com.frankandoak.synchronization.models.RemoteObject;
+import com.frankandoak.synchronization.utilities.DateUtil;
 import com.frankandoak.synchronization.utilities.SyncUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * Created by Michael on 2014-03-11.
@@ -26,23 +33,29 @@ public abstract class BaseSynchronizer<T extends RemoteObject> {
     /*
      * The ID column for the localItems Cursor must be at index 0!
      */
-    public void synchronize(Context context, List<T> items, Cursor localItems, List<Integer> identifierColumnIndices) {
+    public void synchronize(Context context, List<T> items, Cursor localItems, String[] identifierKeys) {
+
+        Set<String> idKeys;
+        Collection<String> idValues;
+        String tag;
+
         Map<String, T> remoteEntities = new HashMap<String, T>();
         for (T entity : items) {
 
-            String remoteIdentifier = SyncUtil.buildIdentifierTag(entity.getIdentifierValues());
+            idValues = entity.getIdentifiers().values();                // Returned in order by LinkedHashMap
+            tag = SyncUtil.getIdentifierTag(idValues);
 
-            if( remoteIdentifier != null )
-                remoteEntities.put(remoteIdentifier, entity);
+            if( tag != null )
+                remoteEntities.put(tag, entity);
         }
 
         List<T> updates = new ArrayList<T>();
         List<Long> deletions = new ArrayList<Long>();
         for (boolean hasItem = localItems.moveToFirst(); hasItem; hasItem = localItems.moveToNext()) {
 
-            String localIdentifier = SyncUtil.buildIdentifierTag(localItems, identifierColumnIndices);
+            tag = SyncUtil.getIdentifierTag(localItems, identifierKeys);
 
-            T matchingEntity = remoteEntities.get(localIdentifier);
+            T matchingEntity = remoteEntities.get(tag);
             if (matchingEntity == null) {
                 // there was no match so this entity should be removed from the
                 // local storage
@@ -55,7 +68,7 @@ public abstract class BaseSynchronizer<T extends RemoteObject> {
 
                 updates.add(matchingEntity);
             }
-            remoteEntities.remove(localIdentifier);
+            remoteEntities.remove(tag);
             continue;
         }
         // anything left over in the remoteEntities Map is a new entity that we
@@ -69,7 +82,28 @@ public abstract class BaseSynchronizer<T extends RemoteObject> {
     protected abstract void performSynchronizationOperations(Context context, List<T> inserts, List<T> updates,
                                                              List<Long> deletions);
 
-    protected abstract boolean isRemoteEntityNewerThanLocal(T remote, Cursor c);
+    protected boolean isRemoteEntityNewerThanLocal(T remote, Cursor c) {
+        try {
+            Calendar remoteUpdatedTime = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            Calendar localUpdatedTime = DateUtil.convertToDate(c.getString(c.getColumnIndex(BaseTable.UPDATED_AT)));
 
-    protected abstract ContentValues getContentValuesForRemoteEntity(T t);
+            if( remoteUpdatedTime == null || localUpdatedTime == null )
+                return true;
+
+            return remoteUpdatedTime.getTimeInMillis() > localUpdatedTime.getTimeInMillis();
+
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    protected ContentValues getContentValuesForRemoteEntity(T t) {
+        ContentValues values = new ContentValues();
+        t.populateContentValues(values);
+
+        return values;
+    }
 }

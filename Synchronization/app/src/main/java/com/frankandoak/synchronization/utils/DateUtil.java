@@ -1,11 +1,9 @@
-package com.frankandoak.synchronization.utilities;
+package com.frankandoak.synchronization.utils;
 
-import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Created by mj_eilers on 15-02-18.

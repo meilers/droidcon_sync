@@ -1,43 +1,30 @@
 package com.frankandoak.synchronization.activities;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.frankandoak.synchronization.R;
-import com.frankandoak.synchronization.models.RemoteCategory;
+import com.frankandoak.synchronization.services.SyncCategoriesService;
 import com.frankandoak.synchronization.services.SyncCategoryProductsService;
 
 
-public class ProductListActivity extends ActionBarActivity {
-
-    public static final class EXTRAS {
-        public static String IN_CATEGORY_ID = "inCategoryId";
-    }
-
-    private RemoteCategory mCategory;
-
+public class CategoryListActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_product_list);
-
-        mCategory = getIntent().getParcelableExtra(EXTRAS.IN_CATEGORY_ID);
-
-        setTitle(mCategory.getName());
+        setContentView(R.layout.activity_category_list);
     }
-
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        Intent intent = new Intent(this, SyncCategoryProductsService.class);
+        Intent intent = new Intent(this, SyncCategoriesService.class);
         intent.setAction(Intent.ACTION_SYNC);
-        intent.putExtra(SyncCategoryProductsService.EXTRAS.IN_CATEGORY_ID, mCategory.getCategoryId());
         startService(intent);
     }
 

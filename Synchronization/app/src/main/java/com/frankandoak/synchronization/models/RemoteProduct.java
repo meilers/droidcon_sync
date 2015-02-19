@@ -45,7 +45,7 @@ public class RemoteProduct extends RemoteObject {
 
     @Expose
     @SerializedName("original_price")
-    private float mPrice;
+    private Float mPrice;
 
 
     public RemoteProduct(final Cursor cursor) {
@@ -122,11 +122,11 @@ public class RemoteProduct extends RemoteObject {
         mFavoriteCount = favoriteCount;
     }
 
-    public float getPrice() {
+    public Float getPrice() {
         return mPrice;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(Float price) {
         mPrice = price;
     }
 }

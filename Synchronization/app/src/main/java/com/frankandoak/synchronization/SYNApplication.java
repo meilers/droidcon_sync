@@ -4,6 +4,11 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.Volley;
+import com.frankandoak.synchronization.utils.LruBitmapCache;
+
 public class SYNApplication extends Application {
 
     public static final String TAG = SYNApplication.class.getSimpleName();
@@ -12,6 +17,9 @@ public class SYNApplication extends Application {
 
 	private static Context sContext;
 	private static Handler sHandler;
+
+    private RequestQueue mRequestQueue;
+    private ImageLoader mImageLoader;
 
 	@Override
 	public void onCreate() {
@@ -31,5 +39,21 @@ public class SYNApplication extends Application {
 		return sContext;
 	}
 
+    public RequestQueue getRequestQueue() {
+        if (mRequestQueue == null) {
+            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
+
+        return mRequestQueue;
+    }
+
+    public ImageLoader getImageLoader() {
+        getRequestQueue();
+        if (mImageLoader == null) {
+            mImageLoader = new ImageLoader(this.mRequestQueue,
+                    new LruBitmapCache());
+        }
+        return this.mImageLoader;
+    }
 
 }

@@ -8,11 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.RemoteException;
 
 import com.frankandoak.synchronization.SYNApplication;
-import com.frankandoak.synchronization.database.CategoryProductTable;
-import com.frankandoak.synchronization.database.CategoryTable;
-import com.frankandoak.synchronization.database.ProductTable;
+import com.frankandoak.synchronization.database. CategoryTable;
 import com.frankandoak.synchronization.database.SYNDatabaseHelper;
-import com.frankandoak.synchronization.models.RemoteCategoryProduct;
+import com.frankandoak.synchronization.models.RemoteCategory;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
 import com.frankandoak.synchronization.utils.SyncUtil;
 
@@ -22,29 +20,28 @@ import java.util.List;
 /**
  * Created by Michael on 2014-03-17.
  */
-public class CategoryProductSynchronizer extends BaseSynchronizer<RemoteCategoryProduct>{
+public class CategorySynchronizer extends BaseSynchronizer<RemoteCategory>{
 
-    private static final String TAG = CategoryProductSynchronizer.class.getSimpleName();
+    private static final String TAG = CategorySynchronizer.class.getSimpleName();
 
-    public CategoryProductSynchronizer(Context context) {
+    public CategorySynchronizer(Context context) {
 
         super(context);
     }
 
     @Override
-    protected void performSynchronizationOperations(Context context, List<RemoteCategoryProduct> inserts, List<RemoteCategoryProduct> updates, List<Long> deletions) {
+    protected void performSynchronizationOperations(Context context, List<RemoteCategory> inserts, List<RemoteCategory> updates, List<Long> deletions) {
 
         ArrayList<ContentProviderOperation> operations = new ArrayList<>();
 
-        if( inserts.size() > 0 )
-        {
+        if( inserts.size() > 0 ) {
             doBulkInsertOptimised(inserts);
         }
 
-        for (RemoteCategoryProduct w : updates) {
+        for (RemoteCategory w : updates) {
             SyncUtil.Selection selection = SyncUtil.buildSelection(w.getIdentifiers());
             ContentProviderOperation op = ContentProviderOperation
-                    .newUpdate(SYNContentProvider.URIS.CATEGORY_PRODUCTS_URI)
+                    .newUpdate(SYNContentProvider.URIS.CATEGORIES_URI)
                     .withSelection(selection.getQuery(), selection.getValues())
                     .withValues(getContentValuesForRemoteEntity(w)).build();
 
@@ -53,7 +50,7 @@ public class CategoryProductSynchronizer extends BaseSynchronizer<RemoteCategory
 
         for (Long id : deletions) {
             ContentProviderOperation op = ContentProviderOperation
-                    .newDelete(SYNContentProvider.URIS.CATEGORY_PRODUCTS_URI)
+                    .newDelete(SYNContentProvider.URIS.CATEGORIES_URI)
                     .withSelection(CategoryTable._ID + " = ?", new String[]{String.valueOf(id)})
                     .build();
 
@@ -64,7 +61,7 @@ public class CategoryProductSynchronizer extends BaseSynchronizer<RemoteCategory
             if( inserts.size() > 0 || operations.size() > 0 )
             {
                 context.getContentResolver().applyBatch(SYNContentProvider.AUTHORITY, operations);
-                context.getContentResolver().notifyChange(SYNContentProvider.URIS.CATEGORY_PRODUCTS_URI, null);
+                context.getContentResolver().notifyChange(SYNContentProvider.URIS.CATEGORIES_URI, null);
             }
 
         } catch (RemoteException e) {
@@ -74,15 +71,15 @@ public class CategoryProductSynchronizer extends BaseSynchronizer<RemoteCategory
         }
     }
 
-    public static List<Long> doBulkInsertOptimised(List<RemoteCategoryProduct> inserts) {
+    public static List<Long> doBulkInsertOptimised(List<RemoteCategory> inserts) {
 
         Context context = SYNApplication.getContext();
         SYNDatabaseHelper helper = SYNDatabaseHelper.getInstance(context);
         SQLiteDatabase db = helper.getWritableDatabase();
 
-        DatabaseUtils.InsertHelper inserter = new DatabaseUtils.InsertHelper(db, ProductTable.TABLE_NAME);
+        DatabaseUtils.InsertHelper inserter = new DatabaseUtils.InsertHelper(db, CategoryTable.TABLE_NAME);
         List<Long> insertedIds = new ArrayList<>();
-        RemoteCategoryProduct categoryProduct;
+        RemoteCategory category;
 
         db.beginTransaction();
 
@@ -90,27 +87,30 @@ public class CategoryProductSynchronizer extends BaseSynchronizer<RemoteCategory
             int len = inserts.size();
             for (int i = 0; i < len; i++) {
 
-                categoryProduct = inserts.get(i);
+                category = inserts.get(i);
 
                 inserter.prepareForInsert();
 
-                if( categoryProduct.getCreatedAt() != null )
-                    inserter.bind(inserter.getColumnIndex(CategoryProductTable.CREATED_AT), categoryProduct.getCreatedAt());
+                if( category.getCreatedAt() != null )
+                    inserter.bind(inserter.getColumnIndex( CategoryTable.CREATED_AT), category.getCreatedAt());
 
-                if( categoryProduct.getCreatedAt() != null )
-                    inserter.bind(inserter.getColumnIndex(CategoryProductTable.UPDATED_AT), categoryProduct.getUpdatedAt());
+                if( category.getCreatedAt() != null )
+                    inserter.bind(inserter.getColumnIndex( CategoryTable.UPDATED_AT), category.getUpdatedAt());
 
-                if( categoryProduct.getSyncStatus() != null )
-                    inserter.bind(inserter.getColumnIndex(CategoryProductTable.SYNC_STATUS), categoryProduct.getSyncStatus().ordinal());
+                if( category.getSyncStatus() != null )
+                    inserter.bind(inserter.getColumnIndex( CategoryTable.SYNC_STATUS), category.getSyncStatus().ordinal());
 
-                if( categoryProduct.getIsDeleted() != null )
-                    inserter.bind(inserter.getColumnIndex(CategoryProductTable.IS_DELETED), categoryProduct.getIsDeleted());
+                if( category.getIsDeleted() != null )
+                    inserter.bind(inserter.getColumnIndex( CategoryTable.IS_DELETED), category.getIsDeleted());
 
-                if( categoryProduct.getCategoryId() != null )
-                    inserter.bind(inserter.getColumnIndex(CategoryProductTable.CATEGORY_ID), categoryProduct.getCategoryId());
+                if( category.getCategoryId() != null )
+                    inserter.bind(inserter.getColumnIndex( CategoryTable.CATEGORY_ID), category.getCategoryId());
 
-                if( categoryProduct.getProductId() != null )
-                    inserter.bind(inserter.getColumnIndex(CategoryProductTable.PRODUCT_ID), categoryProduct.getProductId());
+                if( category.getName() != null )
+                    inserter.bind(inserter.getColumnIndex( CategoryTable.NAME), category.getName());
+
+                if( category.getImageUrl() != null )
+                    inserter.bind(inserter.getColumnIndex( CategoryTable.IMAGE_URL), category.getImageUrl());
 
                 insertedIds.add(inserter.execute());
             }

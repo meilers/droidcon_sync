@@ -1,4 +1,4 @@
-package com.frankandoak.synchronization.utilities;
+package com.frankandoak.synchronization.utils;
 
 import android.content.Context;
 import android.database.Cursor;

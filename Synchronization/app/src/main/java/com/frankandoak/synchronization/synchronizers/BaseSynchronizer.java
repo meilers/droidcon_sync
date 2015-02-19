@@ -6,14 +6,13 @@ import android.database.Cursor;
 
 import com.frankandoak.synchronization.database.BaseTable;
 import com.frankandoak.synchronization.models.RemoteObject;
-import com.frankandoak.synchronization.utilities.DateUtil;
-import com.frankandoak.synchronization.utilities.SyncUtil;
+import com.frankandoak.synchronization.utils.DateUtil;
+import com.frankandoak.synchronization.utils.SyncUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package com.frankandoak.synchronization.utilities;
+package com.frankandoak.synchronization.utils;
 
 /**
  * Created by mj_eilers on 15-02-10.

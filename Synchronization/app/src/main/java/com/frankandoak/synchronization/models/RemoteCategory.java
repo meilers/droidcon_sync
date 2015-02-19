@@ -2,6 +2,8 @@ package com.frankandoak.synchronization.models;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.frankandoak.synchronization.database.CategoryProductTable;
 import com.frankandoak.synchronization.database.CategoryTable;
@@ -17,7 +19,7 @@ import java.util.List;
 /**
  * Created by Michael on 2014-03-17.
  */
-public class RemoteCategory extends RemoteObject {
+public class RemoteCategory extends RemoteObject implements Parcelable {
 
     public static final String[] IDENTIFIERS = new String[] {
             CategoryTable.CATEGORY_ID
@@ -25,15 +27,15 @@ public class RemoteCategory extends RemoteObject {
 
 
     @Expose
-    @SerializedName("id")
+    @SerializedName("store_id")
     private Long mCategoryId;
 
     @Expose
-    @SerializedName("name")
+    @SerializedName("store_name")
     private String mName;
 
     @Expose
-    @SerializedName("image_url")
+    @SerializedName("store_image_url")
     private String mImageUrl;
 
     public RemoteCategory(final Cursor cursor) {
@@ -43,6 +45,71 @@ public class RemoteCategory extends RemoteObject {
         setName(cursor.getString(cursor.getColumnIndex(CategoryTable.NAME)));
         setImageUrl(cursor.getString(cursor.getColumnIndex(CategoryTable.IMAGE_URL)));
     }
+
+
+    public RemoteCategory(Parcel in) {
+        super(in);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        super.writeToParcel(dest, flags);
+
+
+        dest.writeInt(this.getCategoryId() != null ? 1:0);
+
+        if( this.getCategoryId() != null )
+            dest.writeLong(this.getCategoryId());
+
+
+        dest.writeInt(this.getName() != null ? 1:0);
+
+        if( this.getName() != null )
+            dest.writeString(this.getName());
+
+
+
+        dest.writeInt(this.getImageUrl() != null ? 1:0);
+
+        if( this.getImageUrl() != null )
+            dest.writeString(this.getImageUrl());
+    }
+
+
+    public void readFromParcel(Parcel in) {
+
+        super.readFromParcel(in);
+
+        if( in.readInt() == 1 )
+            setCategoryId(in.readLong());
+
+        if( in.readInt() == 1 )
+            setName(in.readString());
+
+        if( in.readInt() == 1 )
+            setImageUrl(in.readString());
+
+    }
+
+    public static Creator<RemoteCategory> CREATOR = new Creator<RemoteCategory>() {
+
+        @Override
+        public RemoteCategory createFromParcel(Parcel in) {
+            return new RemoteCategory(in);
+        }
+
+        @Override
+        public RemoteCategory[] newArray(int size) {
+            return new RemoteCategory[size];
+        }
+    };
+
 
     @Override
     public LinkedHashMap<String, String> getIdentifiers() {

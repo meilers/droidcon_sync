@@ -11,13 +11,13 @@ import com.frankandoak.synchronization.database.ProductTable;
 import com.frankandoak.synchronization.models.RemoteCategoryProduct;
 import com.frankandoak.synchronization.models.RemoteProduct;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
-import com.frankandoak.synchronization.retrofit.GetCategoryProductsClient;
-import com.frankandoak.synchronization.retrofit.GetCategoryProductsResponse;
+import com.frankandoak.synchronization.retrofit.clients.GetCategoryProductsClient;
+import com.frankandoak.synchronization.retrofit.responses.GetCategoryProductsResponse;
 import com.frankandoak.synchronization.retrofit.FAOApiClientManager;
 import com.frankandoak.synchronization.synchronizers.CategoryProductSynchronizer;
 import com.frankandoak.synchronization.synchronizers.ProductSynchronizer;
 import com.frankandoak.synchronization.synchronizers.preprocessors.CategoryProductPreProcessor;
-import com.frankandoak.synchronization.utilities.SyncUtil;
+import com.frankandoak.synchronization.utils.SyncUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,11 +43,11 @@ public class SyncCategoryProductsService extends IntentService {
             Context context = SYNApplication.getContext();
 
             GetCategoryProductsClient client = FAOApiClientManager.getInstance().getClient(context, GetCategoryProductsClient.class);
-            GetCategoryProductsResponse r = null;
+            GetCategoryProductsResponse r;
 
             try {
-                r = client.downloadCategoryProducts(categoryId,1);
-                List<RemoteProduct> remoteProducts = r.response;
+                r = client.getCategoryProducts(categoryId, 1);
+                List<RemoteProduct> remoteProducts = r.getResponse();
 
                 // Sync products
                 Cursor localProducts = context.getContentResolver().query(

@@ -17,6 +17,7 @@ public class CategoryProductTable {
     public static final String IS_DELETED = TABLE_NAME + "_" + "isDeleted";
     public static final String CATEGORY_ID = TABLE_NAME + "_" + "categoryId";
     public static final String PRODUCT_ID = TABLE_NAME + "_" + "productId";
+    public static final String POSITION = TABLE_NAME + "_" + "position";
 
 
     public static String[] ALL_COLUMNS = new String[]{
@@ -26,7 +27,8 @@ public class CategoryProductTable {
             SYNC_STATUS,
             IS_DELETED,
             CATEGORY_ID,
-            PRODUCT_ID
+            PRODUCT_ID,
+            POSITION
     };
 
 
@@ -40,7 +42,9 @@ public class CategoryProductTable {
             + SYNC_STATUS + " integer,"
             + IS_DELETED + " integer,"
             + CATEGORY_ID + " integer not null,"
-            + PRODUCT_ID + " integer not null"
+            + PRODUCT_ID + " integer not null,"
+            + POSITION + " integer not null"
+
             + ");";
 
     public static void onCreate(SQLiteDatabase database) {

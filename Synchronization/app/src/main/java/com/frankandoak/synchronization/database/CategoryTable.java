@@ -18,6 +18,7 @@ public class CategoryTable {
     public static final String CATEGORY_ID = TABLE_NAME + "_" + "categoryId";
     public static final String NAME = TABLE_NAME + "_" + "name";
     public static final String IMAGE_URL = TABLE_NAME + "_" + "imageUrl";
+    public static final String POSITION = TABLE_NAME + "_" + "position";
 
     public static String[] ALL_COLUMNS = new String[]{
             _ID,
@@ -27,7 +28,8 @@ public class CategoryTable {
             IS_DELETED,
             CATEGORY_ID,
             NAME,
-            IMAGE_URL
+            IMAGE_URL,
+            POSITION
     };
 
     // Database creation SQL statement
@@ -41,7 +43,9 @@ public class CategoryTable {
             + IS_DELETED + " integer,"
             + CATEGORY_ID + " integer not null, "
             + NAME + " text not null,"
-            + IMAGE_URL + " text not null"
+            + IMAGE_URL + " text not null, "
+            + POSITION + " integer not null"
+
             + ");";
 
     public static void onCreate(SQLiteDatabase database) {

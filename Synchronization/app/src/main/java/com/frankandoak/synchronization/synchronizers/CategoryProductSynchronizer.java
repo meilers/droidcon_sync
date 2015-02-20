@@ -135,6 +135,9 @@ public class CategoryProductSynchronizer extends BaseSynchronizer<RemoteCategory
                 if( categoryProduct.getProductId() != null )
                     inserter.bind(inserter.getColumnIndex(CategoryProductTable.PRODUCT_ID), categoryProduct.getProductId());
 
+                if( categoryProduct.getPosition() != null )
+                    inserter.bind(inserter.getColumnIndex(CategoryProductTable.POSITION), categoryProduct.getPosition());
+
                 insertedIds.add(inserter.execute());
             }
 

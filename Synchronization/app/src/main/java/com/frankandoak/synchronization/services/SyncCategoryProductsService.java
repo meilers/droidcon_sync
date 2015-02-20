@@ -9,6 +9,7 @@ import com.frankandoak.synchronization.SYNApplication;
 import com.frankandoak.synchronization.database.CategoryProductTable;
 import com.frankandoak.synchronization.database.ProductTable;
 import com.frankandoak.synchronization.models.RemoteCategoryProduct;
+import com.frankandoak.synchronization.models.RemoteObject;
 import com.frankandoak.synchronization.models.RemoteProduct;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
 import com.frankandoak.synchronization.retrofit.clients.GetCategoryProductsClient;
@@ -69,9 +70,20 @@ public class SyncCategoryProductsService extends IntentService {
                 // Sync category products
                 List<RemoteCategoryProduct> remoteCategoryProducts = new ArrayList<>(remoteProducts.size());
                 RemoteCategoryProduct categoryProduct;
+                RemoteProduct product;
 
-                for( RemoteProduct product : remoteProducts ) {
-                    categoryProduct = new RemoteCategoryProduct(null, null, null, null, null, null, categoryId, product.getProductId());
+                for( int i = 0; i < remoteProducts.size(); ++i ) {
+                    product = remoteProducts.get(i);
+                    categoryProduct = new RemoteCategoryProduct(
+                            null,
+                            product.getCreatedAt(),
+                            product.getUpdatedAt(),
+                            RemoteObject.SyncStatus.NO_CHANGES,
+                            false,
+                            categoryId,
+                            product.getProductId(),
+                            i
+                    );
                     remoteCategoryProducts.add(categoryProduct);
                 }
 

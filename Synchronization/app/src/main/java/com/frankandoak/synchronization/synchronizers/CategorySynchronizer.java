@@ -136,6 +136,10 @@ public class CategorySynchronizer extends BaseSynchronizer<RemoteCategory>{
                 if( category.getImageUrl() != null )
                     inserter.bind(inserter.getColumnIndex( CategoryTable.IMAGE_URL), category.getImageUrl());
 
+                if( category.getPosition() != null )
+                    inserter.bind(inserter.getColumnIndex( CategoryTable.POSITION), category.getPosition());
+
+
                 insertedIds.add(inserter.execute());
             }
 

@@ -24,15 +24,15 @@ public class RemoteCategoryProduct extends RemoteObject {
         CategoryProductTable.PRODUCT_ID
     };
 
-    private Long mId;
     private Long mCategoryId;
     private Long mProductId;
+    private Integer mPosition;
 
-    public RemoteCategoryProduct(Long id, String createdAt, String updatedAt, SyncStatus syncStatus, Boolean isDeleted, Long id1, Long categoryId, Long productId) {
+    public RemoteCategoryProduct(Long id, String createdAt, String updatedAt, SyncStatus syncStatus, Boolean isDeleted, Long categoryId, Long productId, Integer position) {
         super(id, createdAt, updatedAt, syncStatus, isDeleted);
-        mId = id1;
         mCategoryId = categoryId;
         mProductId = productId;
+        mPosition = position;
     }
 
     public RemoteCategoryProduct(final Cursor cursor) {
@@ -43,6 +43,8 @@ public class RemoteCategoryProduct extends RemoteObject {
         setIsDeleted(cursor.getInt(cursor.getColumnIndex(CategoryProductTable.IS_DELETED)) == 1);
         setCategoryId(cursor.getLong(cursor.getColumnIndex(CategoryProductTable.CATEGORY_ID)));
         setProductId(cursor.getLong(cursor.getColumnIndex(CategoryProductTable.PRODUCT_ID)));
+        setPosition(cursor.getInt(cursor.getColumnIndex(CategoryProductTable.POSITION)));
+
     }
 
     @Override
@@ -64,14 +66,8 @@ public class RemoteCategoryProduct extends RemoteObject {
 
         values.put(CategoryProductTable.CATEGORY_ID, getCategoryId());
         values.put(CategoryProductTable.PRODUCT_ID, getProductId());
-    }
+        values.put(CategoryProductTable.POSITION, getPosition());
 
-    public Long getId() {
-        return mId;
-    }
-
-    public void setId(Long id) {
-        mId = id;
     }
 
     public Long getCategoryId() {
@@ -90,4 +86,11 @@ public class RemoteCategoryProduct extends RemoteObject {
         mProductId = productId;
     }
 
+    public Integer getPosition() {
+        return mPosition;
+    }
+
+    public void setPosition(Integer position) {
+        mPosition = position;
+    }
 }

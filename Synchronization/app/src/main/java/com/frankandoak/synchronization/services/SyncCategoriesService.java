@@ -14,6 +14,7 @@ import com.frankandoak.synchronization.retrofit.FAOApiClientManager;
 import com.frankandoak.synchronization.retrofit.clients.GetCategoriesClient;
 import com.frankandoak.synchronization.retrofit.responses.GetCategoriesResponse;
 import com.frankandoak.synchronization.synchronizers.CategorySynchronizer;
+import com.frankandoak.synchronization.synchronizers.preprocessors.CategoryPreProcessor;
 import com.frankandoak.synchronization.utils.SyncUtil;
 
 import java.util.List;
@@ -54,7 +55,7 @@ public class SyncCategoriesService extends IntentService {
                         localCategories,
                         RemoteCategory.IDENTIFIERS,
                         new CategorySynchronizer(context),
-                        null
+                        new CategoryPreProcessor()
                 );
                 localCategories.close();
             }

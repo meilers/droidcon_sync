@@ -129,7 +129,7 @@ public class ProductListFragment extends Fragment implements LoaderManager.Loade
                         ProductTable.ALL_COLUMNS,
                         CategoryProductTable.CATEGORY_ID + "=?",
                         new String[] {mCategory.getCategoryId()+""},
-                        null
+                        CategoryProductTable.POSITION
                 );
         }
 
@@ -166,10 +166,7 @@ public class ProductListFragment extends Fragment implements LoaderManager.Loade
 
     public void onEventMainThread(ProductClickedEvent event) {
 
-        RemoteProduct product = event.getProduct();
-        Intent intent = new Intent(getActivity(), ProductListActivity.class);
-        intent.putExtra(ProductListActivity.EXTRAS.IN_CATEGORY_ID, product);
-        startActivity(intent);
+
 
     }
 }

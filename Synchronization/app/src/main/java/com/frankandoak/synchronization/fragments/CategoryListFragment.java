@@ -100,7 +100,7 @@ public class CategoryListFragment extends Fragment implements LoaderManager.Load
         switch (id)
         {
             case SYNConstants.CATEGORIES_LOADER_ID:
-                return new CursorLoader(getActivity(), SYNContentProvider.URIS.CATEGORIES_URI, CategoryTable.ALL_COLUMNS, null, null, null);
+                return new CursorLoader(getActivity(), SYNContentProvider.URIS.CATEGORIES_URI, CategoryTable.ALL_COLUMNS, null, null, CategoryTable.POSITION);
         }
 
         return null;

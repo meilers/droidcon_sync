@@ -36,6 +36,8 @@ public class RemoteCategory extends RemoteObject implements Parcelable {
     @SerializedName("store_image_url")
     private String mImageUrl;
 
+    private Integer mPosition;
+
     public RemoteCategory(final Cursor cursor) {
 
         setId(cursor.getLong(cursor.getColumnIndex(CategoryTable._ID)));
@@ -46,6 +48,8 @@ public class RemoteCategory extends RemoteObject implements Parcelable {
         setCategoryId(cursor.getLong(cursor.getColumnIndex(CategoryTable.CATEGORY_ID)));
         setName(cursor.getString(cursor.getColumnIndex(CategoryTable.NAME)));
         setImageUrl(cursor.getString(cursor.getColumnIndex(CategoryTable.IMAGE_URL)));
+        setPosition(cursor.getInt(cursor.getColumnIndex(CategoryTable.POSITION)));
+
     }
 
 
@@ -132,6 +136,8 @@ public class RemoteCategory extends RemoteObject implements Parcelable {
         values.put(CategoryTable.CATEGORY_ID, getCategoryId());
         values.put(CategoryTable.NAME, getName());
         values.put(CategoryTable.IMAGE_URL, getImageUrl());
+        values.put(CategoryTable.POSITION, getPosition());
+
     }
 
     public Long getCategoryId() {
@@ -156,5 +162,13 @@ public class RemoteCategory extends RemoteObject implements Parcelable {
 
     public void setImageUrl(String imageUrl) {
         mImageUrl = imageUrl;
+    }
+
+    public Integer getPosition() {
+        return mPosition;
+    }
+
+    public void setPosition(Integer position) {
+        mPosition = position;
     }
 }

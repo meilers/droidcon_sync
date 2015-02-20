@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.frankandoak.synchronization.R;
+import com.frankandoak.synchronization.fragments.ProductListFragment;
 import com.frankandoak.synchronization.models.RemoteCategory;
 import com.frankandoak.synchronization.services.SyncCategoryProductsService;
 
@@ -26,6 +27,12 @@ public class ProductListActivity extends ActionBarActivity {
         setContentView(R.layout.activity_product_list);
 
         mCategory = getIntent().getParcelableExtra(EXTRAS.IN_CATEGORY_ID);
+
+        ProductListFragment fragment = ProductListFragment.newInstance(mCategory);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.activity_product_list_container, fragment, ProductListFragment.class.getSimpleName())
+                .commit();
 
         setTitle(mCategory.getName());
     }

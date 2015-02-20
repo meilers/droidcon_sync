@@ -119,7 +119,7 @@ public class SyncUtil {
             entry = iterator.next();
 
             if(iterator.hasNext()) {
-                selectionQuery += entry.getKey() + "=?,";
+                selectionQuery += entry.getKey() + "=? AND ";
             }
             else {
                 selectionQuery += entry.getKey() + "=?";

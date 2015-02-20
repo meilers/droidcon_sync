@@ -52,8 +52,6 @@ public class SYNContentProvider extends ContentProvider {
 
     private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-    private static HashMap<String, String> sCategoryProductsProjectionMap;
-
     static {
         sURIMatcher.addURI(AUTHORITY, Paths.CATEGORIES, CATEGORIES_DIR);
         sURIMatcher.addURI(AUTHORITY, Paths.CATEGORIES + "/#", CATEGORY_ID);
@@ -61,30 +59,6 @@ public class SYNContentProvider extends ContentProvider {
         sURIMatcher.addURI(AUTHORITY, Paths.CATEGORY_PRODUCTS + "/#", CATEGORY_PRODUCT_ID);
         sURIMatcher.addURI(AUTHORITY, Paths.PRODUCTS, PRODUCTS_DIR);
         sURIMatcher.addURI(AUTHORITY, Paths.PRODUCTS + "/#", PRODUCT_ID);
-
-        // projections
-
-        sCategoryProductsProjectionMap = new HashMap<>();
-        sCategoryProductsProjectionMap.put(CategoryProductTable._ID, CategoryProductTable.FULL_ID);
-        sCategoryProductsProjectionMap.put(CategoryProductTable.CATEGORY_ID, CategoryProductTable.FULL_CATEGORY_ID);
-        sCategoryProductsProjectionMap.put(CategoryProductTable.PRODUCT_ID, CategoryProductTable.FULL_PRODUCT_ID);
-
-        sCategoryProductsProjectionMap.put("category_created_at", CategoryTable.FULL_CREATED_AT + " AS " + "category_created_at");
-        sCategoryProductsProjectionMap.put("category_updated_at", CategoryTable.FULL_UPDATED_AT + " AS " + "category_updated_at");
-        sCategoryProductsProjectionMap.put("category_sync_status", CategoryTable.FULL_SYNC_STATUS + " AS " + "category_sync_status");
-        sCategoryProductsProjectionMap.put("category_is_deleted", CategoryTable.FULL_IS_DELETED + " AS " + "category_is_deleted");
-        sCategoryProductsProjectionMap.put("category_name", CategoryTable.FULL_NAME + " AS " + "category_name");
-        sCategoryProductsProjectionMap.put("category_image_url", CategoryTable.FULL_IMAGE_URL + " AS " + "category_image_url");
-
-        sCategoryProductsProjectionMap.put("product_created_at", ProductTable.FULL_CREATED_AT + " AS " + "product_created_at");
-        sCategoryProductsProjectionMap.put("product_updated_at", ProductTable.FULL_CREATED_AT + " AS " + "product_updated_at");
-        sCategoryProductsProjectionMap.put("product_sync_status", ProductTable.FULL_SYNC_STATUS + " AS " + "product_sync_status");
-        sCategoryProductsProjectionMap.put("product_is_deleted", ProductTable.FULL_IS_DELETED + " AS " + "product_is_deleted");
-        sCategoryProductsProjectionMap.put("product_sku", ProductTable.FULL_SKU + " AS " + "product_name");
-        sCategoryProductsProjectionMap.put("product_name", ProductTable.FULL_NAME + " AS " + "product_sku");
-        sCategoryProductsProjectionMap.put("product_image_url", ProductTable.FULL_IMAGE_URL + " AS " + "product_image_url");
-        sCategoryProductsProjectionMap.put("product_price", ProductTable.FULL_PRICE + " AS " + "product_price");
-
     }
 
     // database
@@ -142,21 +116,24 @@ public class SYNContentProvider extends ContentProvider {
                 break;
 
             case CATEGORY_PRODUCT_ID:
-                groupBy = ProductTable.FULL_PRODUCT_ID;
 
                 queryBuilder.setTables(CategoryProductTable.TABLE_NAME +
                         " INNER JOIN " + CategoryTable.TABLE_NAME + " ON " +
-                        CategoryProductTable.FULL_CATEGORY_ID + " = " + CategoryTable.FULL_CATEGORY_ID +
+                        CategoryProductTable.CATEGORY_ID + " = " + CategoryTable.CATEGORY_ID +
                         " INNER JOIN " + ProductTable.TABLE_NAME + " ON " +
-                        CategoryProductTable.FULL_PRODUCT_ID + " = " + ProductTable.FULL_PRODUCT_ID
+                        CategoryProductTable.PRODUCT_ID + " = " + ProductTable.PRODUCT_ID
                 );
 
-                queryBuilder.setProjectionMap(sCategoryProductsProjectionMap);
-                queryBuilder.appendWhere(CategoryProductTable.FULL_CATEGORY_ID + "=" + uri.getLastPathSegment());
+                queryBuilder.appendWhere(CategoryProductTable.CATEGORY_ID + "=" + uri.getLastPathSegment());
                 break;
 
             case CATEGORY_PRODUCTS_DIR:
-                queryBuilder.setTables(CategoryProductTable.TABLE_NAME);
+                queryBuilder.setTables(CategoryProductTable.TABLE_NAME +
+                                " INNER JOIN " + CategoryTable.TABLE_NAME + " ON " +
+                                CategoryProductTable.CATEGORY_ID + " = " + CategoryTable.CATEGORY_ID +
+                                " INNER JOIN " + ProductTable.TABLE_NAME + " ON " +
+                                CategoryProductTable.PRODUCT_ID + " = " + ProductTable.PRODUCT_ID
+                );
                 break;
 
 

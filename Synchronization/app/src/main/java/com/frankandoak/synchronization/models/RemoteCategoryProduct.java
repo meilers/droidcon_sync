@@ -1,5 +1,6 @@
 package com.frankandoak.synchronization.models;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.frankandoak.synchronization.database.CategoryProductTable;
@@ -27,12 +28,19 @@ public class RemoteCategoryProduct extends RemoteObject {
     private Long mCategoryId;
     private Long mProductId;
 
-    private RemoteCategory mCategory;
-    private RemoteProduct mProduct;
+    public RemoteCategoryProduct(Long id, String createdAt, String updatedAt, SyncStatus syncStatus, Boolean isDeleted, Long id1, Long categoryId, Long productId) {
+        super(id, createdAt, updatedAt, syncStatus, isDeleted);
+        mId = id1;
+        mCategoryId = categoryId;
+        mProductId = productId;
+    }
 
     public RemoteCategoryProduct(final Cursor cursor) {
-        super(cursor);
-
+        setId(cursor.getLong(cursor.getColumnIndex(CategoryProductTable._ID)));
+        setCreatedAt(cursor.getString(cursor.getColumnIndex(CategoryProductTable.CREATED_AT)));
+        setUpdatedAt(cursor.getString(cursor.getColumnIndex(CategoryProductTable.UPDATED_AT)));
+        setSyncStatus(SyncStatus.getSyncStatusFromCode(cursor.getInt(cursor.getColumnIndex(CategoryProductTable.SYNC_STATUS))));
+        setIsDeleted(cursor.getInt(cursor.getColumnIndex(CategoryProductTable.IS_DELETED)) == 1);
         setCategoryId(cursor.getLong(cursor.getColumnIndex(CategoryProductTable.CATEGORY_ID)));
         setProductId(cursor.getLong(cursor.getColumnIndex(CategoryProductTable.PRODUCT_ID)));
     }
@@ -47,6 +55,16 @@ public class RemoteCategoryProduct extends RemoteObject {
         return identifiers;
     }
 
+    @Override
+    public void populateContentValues(ContentValues values) {
+        values.put(CategoryProductTable.CREATED_AT, getCreatedAt());
+        values.put(CategoryProductTable.UPDATED_AT, getUpdatedAt());
+        values.put(CategoryProductTable.SYNC_STATUS, getSyncStatus() != null ? getSyncStatus().ordinal() : null);
+        values.put(CategoryProductTable.IS_DELETED, getIsDeleted());
+
+        values.put(CategoryProductTable.CATEGORY_ID, getCategoryId());
+        values.put(CategoryProductTable.PRODUCT_ID, getProductId());
+    }
 
     public Long getId() {
         return mId;
@@ -70,22 +88,6 @@ public class RemoteCategoryProduct extends RemoteObject {
 
     public void setProductId(Long productId) {
         mProductId = productId;
-    }
-
-    public RemoteCategory getCategory() {
-        return mCategory;
-    }
-
-    public void setCategory(RemoteCategory category) {
-        mCategory = category;
-    }
-
-    public RemoteProduct getProduct() {
-        return mProduct;
-    }
-
-    public void setProduct(RemoteProduct product) {
-        mProduct = product;
     }
 
 }

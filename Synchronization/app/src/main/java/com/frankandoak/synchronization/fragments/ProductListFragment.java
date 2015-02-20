@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,13 +17,14 @@ import android.view.ViewGroup;
 
 import com.frankandoak.synchronization.R;
 import com.frankandoak.synchronization.SYNConstants;
-import com.frankandoak.synchronization.activities.CategoryListActivity;
 import com.frankandoak.synchronization.activities.ProductListActivity;
-import com.frankandoak.synchronization.adapters.CategoryAdapter;
+import com.frankandoak.synchronization.adapters.ProductAdapter;
+import com.frankandoak.synchronization.database.CategoryProductTable;
 import com.frankandoak.synchronization.database.CategoryTable;
 import com.frankandoak.synchronization.database.ProductTable;
-import com.frankandoak.synchronization.events.CategoryClickedEvent;
+import com.frankandoak.synchronization.events.ProductClickedEvent;
 import com.frankandoak.synchronization.models.RemoteCategory;
+import com.frankandoak.synchronization.models.RemoteProduct;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
 import com.frankandoak.synchronization.views.DividerItemDecoration;
 
@@ -34,34 +36,54 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by mj_eilers on 15-02-19.
  */
-public class CategoryListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ProductListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final class ARGUMENTS {
+        public static final String IN_CATEGORY = "inCategory";
+    }
+
+    private RemoteCategory mCategory;
 
     private RecyclerView mRv;
-    private LinearLayoutManager mLayoutManager;
-    private CategoryAdapter mCstegoryAdapter;
-    private List<RemoteCategory> mCategories;
+    private GridLayoutManager mLayoutManager;
+    private ProductAdapter mCategoryAdapter;
+    private List<RemoteProduct> mProducts;
 
+    public static final ProductListFragment newInstance(RemoteCategory cat) {
+        ProductListFragment f = new ProductListFragment();
+
+        Bundle args = f.getArguments();
+        if (args == null) {
+            args = new Bundle();
+            args.putParcelable(ARGUMENTS.IN_CATEGORY, cat);
+        }
+
+        f.setArguments(args);
+
+        return f;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mCategories = new ArrayList<>();
+        mProducts = new ArrayList<>();
+        mCategory = getArguments().getParcelable(ARGUMENTS.IN_CATEGORY);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_category_list, null);
+        View view = inflater.inflate(R.layout.fragment_product_list, null);
 
-        mRv = (RecyclerView) view.findViewById(R.id.fragment_category_list_rv);
+        mRv = (RecyclerView) view.findViewById(R.id.fragment_product_list_rv);
 
         // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(getActivity());
+        mLayoutManager = new GridLayoutManager(getActivity(),2);
         mRv.setLayoutManager(mLayoutManager);
 
         // specify an adapter (see also next example)
-        mCstegoryAdapter = new CategoryAdapter(mCategories);
-        mRv.setAdapter(mCstegoryAdapter);
+        mCategoryAdapter = new ProductAdapter(mProducts);
+        mRv.setAdapter(mCategoryAdapter);
 
         // Decorations
         mRv.addItemDecoration(new DividerItemDecoration(getActivity()));
@@ -77,7 +99,7 @@ public class CategoryListFragment extends Fragment implements LoaderManager.Load
     public void onStart() {
         super.onStart();
 
-        getLoaderManager().initLoader(SYNConstants.CATEGORIES_LOADER_ID, null, this);
+        getLoaderManager().initLoader(SYNConstants.CATEGORY_PRODUCTS_LOADER_ID, null, this);
     }
 
     @Override
@@ -99,8 +121,16 @@ public class CategoryListFragment extends Fragment implements LoaderManager.Load
 
         switch (id)
         {
-            case SYNConstants.CATEGORIES_LOADER_ID:
-                return new CursorLoader(getActivity(), SYNContentProvider.URIS.CATEGORIES_URI, CategoryTable.ALL_COLUMNS, null, null, null);
+            case SYNConstants.CATEGORY_PRODUCTS_LOADER_ID:
+
+                return new CursorLoader(
+                        getActivity(),
+                        SYNContentProvider.URIS.CATEGORY_PRODUCTS_URI,
+                        ProductTable.ALL_COLUMNS,
+                        CategoryProductTable.CATEGORY_ID + "=?",
+                        new String[] {mCategory.getCategoryId()+""},
+                        null
+                );
         }
 
         return null;
@@ -111,16 +141,16 @@ public class CategoryListFragment extends Fragment implements LoaderManager.Load
 
         switch (loader.getId())
         {
-            case SYNConstants.CATEGORIES_LOADER_ID:
+            case SYNConstants.CATEGORY_PRODUCTS_LOADER_ID:
 
                 if( data != null ) {
-                    mCategories.clear();
+                    mProducts.clear();
 
                     for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
-                        mCategories.add(new RemoteCategory(data));
+                        mProducts.add(new RemoteProduct(data));
                     }
 
-                    mCstegoryAdapter.notifyDataSetChanged();
+                    mCategoryAdapter.notifyDataSetChanged();
                 }
 
                 break;
@@ -134,11 +164,11 @@ public class CategoryListFragment extends Fragment implements LoaderManager.Load
 
 
 
-    public void onEventMainThread(CategoryClickedEvent event) {
+    public void onEventMainThread(ProductClickedEvent event) {
 
-        RemoteCategory category = event.getCategory();
+        RemoteProduct product = event.getProduct();
         Intent intent = new Intent(getActivity(), ProductListActivity.class);
-        intent.putExtra(ProductListActivity.EXTRAS.IN_CATEGORY_ID, category);
+        intent.putExtra(ProductListActivity.EXTRAS.IN_CATEGORY_ID, product);
         startActivity(intent);
 
     }

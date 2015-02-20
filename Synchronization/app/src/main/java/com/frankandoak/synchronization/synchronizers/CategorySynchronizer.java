@@ -3,19 +3,25 @@ package com.frankandoak.synchronization.synchronizers;
 import android.content.ContentProviderOperation;
 import android.content.Context;
 import android.content.OperationApplicationException;
+import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.RemoteException;
 
 import com.frankandoak.synchronization.SYNApplication;
+import com.frankandoak.synchronization.database.CategoryProductTable;
 import com.frankandoak.synchronization.database. CategoryTable;
 import com.frankandoak.synchronization.database.SYNDatabaseHelper;
 import com.frankandoak.synchronization.models.RemoteCategory;
+import com.frankandoak.synchronization.models.RemoteCategory;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
+import com.frankandoak.synchronization.utils.DateUtil;
 import com.frankandoak.synchronization.utils.SyncUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by Michael on 2014-03-17.
@@ -69,6 +75,24 @@ public class CategorySynchronizer extends BaseSynchronizer<RemoteCategory>{
         } catch (OperationApplicationException e) {
             e.printStackTrace();
         }
+    }
+
+    protected boolean isRemoteEntityNewerThanLocal(RemoteCategory remote, Cursor c) {
+        try {
+            Calendar remoteUpdatedTime = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            Calendar localUpdatedTime = DateUtil.convertToDate(c.getString(c.getColumnIndex(CategoryTable.UPDATED_AT)));
+
+            if( remoteUpdatedTime == null || localUpdatedTime == null )
+                return true;
+
+            return remoteUpdatedTime.getTimeInMillis() > localUpdatedTime.getTimeInMillis();
+
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
     public static List<Long> doBulkInsertOptimised(List<RemoteCategory> inserts) {

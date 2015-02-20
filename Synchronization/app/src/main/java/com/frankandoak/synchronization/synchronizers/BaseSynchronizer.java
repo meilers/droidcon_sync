@@ -4,19 +4,15 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
-import com.frankandoak.synchronization.database.BaseTable;
 import com.frankandoak.synchronization.models.RemoteObject;
-import com.frankandoak.synchronization.utils.DateUtil;
 import com.frankandoak.synchronization.utils.SyncUtil;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 /**
  * Created by Michael on 2014-03-11.
@@ -81,23 +77,7 @@ public abstract class BaseSynchronizer<T extends RemoteObject> {
     protected abstract void performSynchronizationOperations(Context context, List<T> inserts, List<T> updates,
                                                              List<Long> deletions);
 
-    protected boolean isRemoteEntityNewerThanLocal(T remote, Cursor c) {
-        try {
-            Calendar remoteUpdatedTime = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-            Calendar localUpdatedTime = DateUtil.convertToDate(c.getString(c.getColumnIndex(BaseTable.UPDATED_AT)));
-
-            if( remoteUpdatedTime == null || localUpdatedTime == null )
-                return true;
-
-            return remoteUpdatedTime.getTimeInMillis() > localUpdatedTime.getTimeInMillis();
-
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-        }
-
-        return true;
-    }
+    protected abstract boolean isRemoteEntityNewerThanLocal(T remote, Cursor c);
 
     protected ContentValues getContentValuesForRemoteEntity(T t) {
         ContentValues values = new ContentValues();

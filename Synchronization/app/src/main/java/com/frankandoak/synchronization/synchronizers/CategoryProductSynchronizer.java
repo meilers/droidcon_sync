@@ -3,6 +3,7 @@ package com.frankandoak.synchronization.synchronizers;
 import android.content.ContentProviderOperation;
 import android.content.Context;
 import android.content.OperationApplicationException;
+import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.RemoteException;
@@ -14,10 +15,13 @@ import com.frankandoak.synchronization.database.ProductTable;
 import com.frankandoak.synchronization.database.SYNDatabaseHelper;
 import com.frankandoak.synchronization.models.RemoteCategoryProduct;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
+import com.frankandoak.synchronization.utils.DateUtil;
 import com.frankandoak.synchronization.utils.SyncUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by Michael on 2014-03-17.
@@ -74,13 +78,32 @@ public class CategoryProductSynchronizer extends BaseSynchronizer<RemoteCategory
         }
     }
 
+    protected boolean isRemoteEntityNewerThanLocal(RemoteCategoryProduct remote, Cursor c) {
+        try {
+            Calendar remoteUpdatedTime = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            Calendar localUpdatedTime = DateUtil.convertToDate(c.getString(c.getColumnIndex(CategoryProductTable.UPDATED_AT)));
+
+            if( remoteUpdatedTime == null || localUpdatedTime == null )
+                return true;
+
+            return remoteUpdatedTime.getTimeInMillis() > localUpdatedTime.getTimeInMillis();
+
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+
     public static List<Long> doBulkInsertOptimised(List<RemoteCategoryProduct> inserts) {
 
         Context context = SYNApplication.getContext();
         SYNDatabaseHelper helper = SYNDatabaseHelper.getInstance(context);
         SQLiteDatabase db = helper.getWritableDatabase();
 
-        DatabaseUtils.InsertHelper inserter = new DatabaseUtils.InsertHelper(db, ProductTable.TABLE_NAME);
+        DatabaseUtils.InsertHelper inserter = new DatabaseUtils.InsertHelper(db, CategoryProductTable.TABLE_NAME);
         List<Long> insertedIds = new ArrayList<>();
         RemoteCategoryProduct categoryProduct;
 

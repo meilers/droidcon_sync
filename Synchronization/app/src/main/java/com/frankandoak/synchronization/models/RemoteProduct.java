@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.frankandoak.synchronization.database.CategoryProductTable;
+import com.frankandoak.synchronization.database.CategoryTable;
 import com.frankandoak.synchronization.database.ProductTable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -49,9 +50,11 @@ public class RemoteProduct extends RemoteObject {
 
 
     public RemoteProduct(final Cursor cursor) {
-
-        super(cursor);
-
+        setId(cursor.getLong(cursor.getColumnIndex(ProductTable._ID)));
+        setCreatedAt(cursor.getString(cursor.getColumnIndex(ProductTable.CREATED_AT)));
+        setUpdatedAt(cursor.getString(cursor.getColumnIndex(ProductTable.UPDATED_AT)));
+        setSyncStatus(SyncStatus.getSyncStatusFromCode(cursor.getInt(cursor.getColumnIndex(ProductTable.SYNC_STATUS))));
+        setIsDeleted(cursor.getInt(cursor.getColumnIndex(ProductTable.IS_DELETED)) == 1);
         setProductId(cursor.getLong(cursor.getColumnIndex(ProductTable.PRODUCT_ID)));
         setSku(cursor.getString(cursor.getColumnIndex(ProductTable.SKU)));
         setName(cursor.getString(cursor.getColumnIndex(ProductTable.NAME)));
@@ -71,7 +74,10 @@ public class RemoteProduct extends RemoteObject {
 
     @Override
     public void populateContentValues(ContentValues values) {
-        super.populateContentValues(values);
+        values.put(ProductTable.CREATED_AT, getCreatedAt());
+        values.put(ProductTable.UPDATED_AT, getUpdatedAt());
+        values.put(ProductTable.SYNC_STATUS, getSyncStatus() != null ? getSyncStatus().ordinal() : null);
+        values.put(ProductTable.IS_DELETED, getIsDeleted());
 
         values.put(ProductTable.PRODUCT_ID, getProductId());
         values.put(ProductTable.SKU, getSku());

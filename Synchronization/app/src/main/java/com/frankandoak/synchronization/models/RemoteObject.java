@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.frankandoak.synchronization.database.BaseTable;
-import com.frankandoak.synchronization.database.ProductTable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -46,14 +44,8 @@ public abstract class RemoteObject implements Parcelable {
     private SyncStatus mSyncStatus;
     private Boolean mIsDeleted;
 
+    public RemoteObject() {}
 
-    public RemoteObject(final Cursor cursor) {
-        setId(cursor.getLong(cursor.getColumnIndex(BaseTable._ID)));
-        setCreatedAt(cursor.getString(cursor.getColumnIndex(BaseTable.CREATED_AT)));
-        setUpdatedAt(cursor.getString(cursor.getColumnIndex(BaseTable.UPDATED_AT)));
-        setSyncStatus(SyncStatus.getSyncStatusFromCode(cursor.getInt(cursor.getColumnIndex(BaseTable.SYNC_STATUS))));
-        setIsDeleted(cursor.getInt(cursor.getColumnIndex(BaseTable.IS_DELETED)) == 1);
-    }
 
     protected RemoteObject(Long id, String createdAt, String updatedAt, SyncStatus syncStatus, Boolean isDeleted) {
         mId = id;
@@ -177,12 +169,6 @@ public abstract class RemoteObject implements Parcelable {
         return identifiers;
     }
 
-    public void populateContentValues(ContentValues values) {
-
-        values.put(BaseTable.CREATED_AT, getCreatedAt());
-        values.put(BaseTable.UPDATED_AT, getUpdatedAt());
-        values.put(BaseTable.SYNC_STATUS, getSyncStatus() != null ? getSyncStatus().ordinal() : null);
-        values.put(BaseTable.IS_DELETED, getIsDeleted());
-    };
+    public abstract void populateContentValues(ContentValues values);
 }
 

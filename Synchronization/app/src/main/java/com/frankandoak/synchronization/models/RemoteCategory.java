@@ -5,9 +5,7 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.frankandoak.synchronization.database.CategoryProductTable;
 import com.frankandoak.synchronization.database.CategoryTable;
-import com.frankandoak.synchronization.database.ProductTable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -39,8 +37,12 @@ public class RemoteCategory extends RemoteObject implements Parcelable {
     private String mImageUrl;
 
     public RemoteCategory(final Cursor cursor) {
-        super(cursor);
 
+        setId(cursor.getLong(cursor.getColumnIndex(CategoryTable._ID)));
+        setCreatedAt(cursor.getString(cursor.getColumnIndex(CategoryTable.CREATED_AT)));
+        setUpdatedAt(cursor.getString(cursor.getColumnIndex(CategoryTable.UPDATED_AT)));
+        setSyncStatus(SyncStatus.getSyncStatusFromCode(cursor.getInt(cursor.getColumnIndex(CategoryTable.SYNC_STATUS))));
+        setIsDeleted(cursor.getInt(cursor.getColumnIndex(CategoryTable.IS_DELETED)) == 1);
         setCategoryId(cursor.getLong(cursor.getColumnIndex(CategoryTable.CATEGORY_ID)));
         setName(cursor.getString(cursor.getColumnIndex(CategoryTable.NAME)));
         setImageUrl(cursor.getString(cursor.getColumnIndex(CategoryTable.IMAGE_URL)));
@@ -122,7 +124,10 @@ public class RemoteCategory extends RemoteObject implements Parcelable {
 
     @Override
     public void populateContentValues(ContentValues values) {
-        super.populateContentValues(values);
+        values.put(CategoryTable.CREATED_AT, getCreatedAt());
+        values.put(CategoryTable.UPDATED_AT, getUpdatedAt());
+        values.put(CategoryTable.SYNC_STATUS, getSyncStatus() != null ? getSyncStatus().ordinal() : null);
+        values.put(CategoryTable.IS_DELETED, getIsDeleted());
 
         values.put(CategoryTable.CATEGORY_ID, getCategoryId());
         values.put(CategoryTable.NAME, getName());

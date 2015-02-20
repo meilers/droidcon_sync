@@ -18,7 +18,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by mj_eilers on 15-02-19.
  */
-public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class CategoryAdapter extends RecyclerView.Adapter<CategoryViewHolder> {
 
     private List<RemoteCategory> mCategories;
     private CategoryClickListener mCategoryClickListener = new CategoryClickListener() {
@@ -35,7 +35,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     // Create new views (invoked by the layout manager)
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v;
 
         v = LayoutInflater.from(parent.getContext())
@@ -46,13 +46,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(CategoryViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
         RemoteCategory item = mCategories.get(position);
 
-        ((CategoryViewHolder) holder).bindViewHolder(item);
+        holder.bindViewHolder(item);
 
     }
 

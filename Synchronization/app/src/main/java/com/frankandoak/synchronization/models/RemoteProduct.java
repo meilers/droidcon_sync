@@ -74,10 +74,10 @@ public class RemoteProduct extends RemoteObject {
 
     @Override
     public void populateContentValues(ContentValues values) {
-        values.put(CategoryProductTable.CREATED_AT, getCreatedAt());
+        values.put(ProductTable.CREATED_AT, getCreatedAt());
         values.put(ProductTable.UPDATED_AT, getUpdatedAt());
         values.put(ProductTable.SYNC_STATUS, getSyncStatus() != null ? getSyncStatus().ordinal() : null);
-        values.put(CategoryProductTable.IS_DELETED, getIsDeleted());
+        values.put(ProductTable.IS_DELETED, getIsDeleted());
 
         values.put(ProductTable.PRODUCT_ID, getProductId());
         values.put(ProductTable.SKU, getSku());

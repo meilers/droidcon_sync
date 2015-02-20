@@ -63,9 +63,6 @@ public class CategoryListFragment extends Fragment implements LoaderManager.Load
         mCstegoryAdapter = new CategoryAdapter(mCategories);
         mRv.setAdapter(mCstegoryAdapter);
 
-        // Decorations
-        mRv.addItemDecoration(new DividerItemDecoration(getActivity()));
-
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         mRv.setHasFixedSize(true);

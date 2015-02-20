@@ -4,7 +4,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/fo_warm_gray2">
+
 
     <LinearLayout
         android:id="@+id/list_item_inner_layout"
@@ -37,6 +39,17 @@
             android:gravity="center"/>
     </LinearLayout>
 
+    <Button
+        android:id="@+id/list_item_product_favorite_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:background="@null"
+        android:drawableTop="@drawable/ic_heart_off"
+        android:padding="10dp"
+        android:text="12"
+        android:textSize="10sp"
+        android:textColor="@android:color/black"/>
 
     <View
         android:id="@+id/list_item_product_selector"

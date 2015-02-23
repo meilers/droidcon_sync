@@ -39,9 +39,20 @@ public class FAOApiClientManager {
     public <T> T getClient(Context context, Class<T> clazz) {
         if (mRestAdapter == null) {
             Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+
+            RequestInterceptor requestInterceptor = new RequestInterceptor() {
+                @Override
+                public void intercept(RequestFacade request) {
+
+                request.addHeader("X-Session-Token", "1qf3h_v6hitkbehmse4beqcc1au561c3");
+                }
+            };
+
+
             mRestAdapter = new RestAdapter.Builder()
                     .setEndpoint(getBaseUrl())
                     .setConverter(new GsonConverter(gson))
+                    .setRequestInterceptor(requestInterceptor)
                     .build();
         }
         T client = null;

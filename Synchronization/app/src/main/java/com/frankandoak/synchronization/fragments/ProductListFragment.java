@@ -11,6 +11,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,14 +22,18 @@ import com.frankandoak.synchronization.activities.ProductListActivity;
 import com.frankandoak.synchronization.adapters.ProductAdapter;
 import com.frankandoak.synchronization.database.CategoryProductTable;
 import com.frankandoak.synchronization.database.CategoryTable;
+import com.frankandoak.synchronization.database.FavoriteTable;
 import com.frankandoak.synchronization.database.ProductTable;
 import com.frankandoak.synchronization.events.ProductClickedEvent;
 import com.frankandoak.synchronization.models.RemoteCategory;
+import com.frankandoak.synchronization.models.RemoteFavorite;
 import com.frankandoak.synchronization.models.RemoteProduct;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
+import com.frankandoak.synchronization.utils.ArrayUtil;
 import com.frankandoak.synchronization.views.DividerItemDecoration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -49,6 +54,8 @@ public class ProductListFragment extends Fragment implements LoaderManager.Loade
     private ProductAdapter mCategoryAdapter;
     private List<RemoteProduct> mProducts;
 
+    private HashMap<Long,RemoteFavorite> mFavorites;
+
     public static final ProductListFragment newInstance(RemoteCategory cat) {
         ProductListFragment f = new ProductListFragment();
 
@@ -68,6 +75,7 @@ public class ProductListFragment extends Fragment implements LoaderManager.Loade
         super.onCreate(savedInstanceState);
 
         mProducts = new ArrayList<>();
+        mFavorites = new HashMap<>();
         mCategory = getArguments().getParcelable(ARGUMENTS.IN_CATEGORY);
     }
 
@@ -82,7 +90,7 @@ public class ProductListFragment extends Fragment implements LoaderManager.Loade
         mRv.setLayoutManager(mLayoutManager);
 
         // specify an adapter (see also next example)
-        mCategoryAdapter = new ProductAdapter(mProducts);
+        mCategoryAdapter = new ProductAdapter(mProducts,mFavorites);
         mRv.setAdapter(mCategoryAdapter);
 
         // use this setting to improve performance if you know that changes
@@ -120,10 +128,11 @@ public class ProductListFragment extends Fragment implements LoaderManager.Loade
         {
             case SYNConstants.CATEGORY_PRODUCTS_LOADER_ID:
 
+                String[] columns = ArrayUtil.concatenate(ArrayUtil.concatenate(CategoryProductTable.ALL_COLUMNS, ProductTable.ALL_COLUMNS), FavoriteTable.ALL_COLUMNS);
                 return new CursorLoader(
                         getActivity(),
                         SYNContentProvider.URIS.CATEGORY_PRODUCTS_URI,
-                        ProductTable.ALL_COLUMNS,
+                        columns,
                         CategoryProductTable.CATEGORY_ID + "=?",
                         new String[] {mCategory.getCategoryId()+""},
                         CategoryProductTable.POSITION
@@ -140,11 +149,21 @@ public class ProductListFragment extends Fragment implements LoaderManager.Loade
         {
             case SYNConstants.CATEGORY_PRODUCTS_LOADER_ID:
 
+                RemoteFavorite favorite;
+
                 if( data != null ) {
+
                     mProducts.clear();
+                    mFavorites.clear();
 
                     for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
                         mProducts.add(new RemoteProduct(data));
+                        favorite = new RemoteFavorite(data);
+
+                        if( favorite.getProductId() != null ) {
+                            mFavorites.put(favorite.getProductId(), favorite);
+                        }
+
                     }
 
                     mCategoryAdapter.notifyDataSetChanged();

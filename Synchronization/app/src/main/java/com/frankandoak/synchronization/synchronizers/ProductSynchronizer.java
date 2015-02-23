@@ -10,10 +10,8 @@ import android.os.RemoteException;
 
 
 import com.frankandoak.synchronization.SYNApplication;
-import com.frankandoak.synchronization.database.CategoryTable;
 import com.frankandoak.synchronization.database.ProductTable;
 import com.frankandoak.synchronization.database.SYNDatabaseHelper;
-import com.frankandoak.synchronization.models.RemoteProduct;
 import com.frankandoak.synchronization.models.RemoteProduct;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
 import com.frankandoak.synchronization.utils.DateUtil;

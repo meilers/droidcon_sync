@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import com.frankandoak.synchronization.R;
 import com.frankandoak.synchronization.services.SyncCategoriesService;
 import com.frankandoak.synchronization.services.SyncCategoryProductsService;
+import com.frankandoak.synchronization.services.SyncFavoritesService;
 
 
 public class CategoryListActivity extends ActionBarActivity {
@@ -26,6 +27,10 @@ public class CategoryListActivity extends ActionBarActivity {
         super.onStart();
 
         Intent intent = new Intent(this, SyncCategoriesService.class);
+        intent.setAction(Intent.ACTION_SYNC);
+        startService(intent);
+
+        intent = new Intent(this, SyncFavoritesService.class);
         intent.setAction(Intent.ACTION_SYNC);
         startService(intent);
     }

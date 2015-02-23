@@ -30,6 +30,7 @@
 
         <service android:name=".services.SyncCategoriesService" />
         <service android:name=".services.SyncCategoryProductsService" />
+        <service android:name=".services.SyncFavoritesService" />
 
         <provider
             android:name=".providers.SYNContentProvider"

@@ -4,6 +4,7 @@ package com.frankandoak.synchronization.adapters.viewHolders;
  * Created by mj_eilers on 15-02-19.
  */
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
@@ -30,7 +31,7 @@ public class ProductViewHolder extends RecyclerView.ViewHolder  {
     public NetworkImageView mIv;
     public TextView mNameTv;
     public TextView mPriceTv;
-    public Button mFavoriteCountTv;
+    public Button mFavoriteCountBtn;
     public View mSelectorView;
 
     public ProductViewHolder(View v, ProductClickListener productClickListener) {
@@ -42,7 +43,7 @@ public class ProductViewHolder extends RecyclerView.ViewHolder  {
         mNameTv = (TextView) v.findViewById(R.id.list_item_product_name_tv);
         mPriceTv = (TextView) v.findViewById(R.id.list_item_product_price_tv);
         mSelectorView = v.findViewById(R.id.list_item_product_selector);
-        mFavoriteCountTv = (Button)v.findViewById(R.id.list_item_product_favorite_btn);
+        mFavoriteCountBtn = (Button)v.findViewById(R.id.list_item_product_favorite_btn);
 
         v.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,9 +54,10 @@ public class ProductViewHolder extends RecyclerView.ViewHolder  {
         });
     }
 
-    public void bindViewHolder(RemoteProduct product) {
+    public void bindViewHolder(RemoteProduct product, boolean isFavorited) {
 
         Context c = SYNApplication.getContext();
+        Resources r = c.getResources();
         int margin = UiUtil.convertDpToPixels(CELL_MARGIN_DP, c);
         final int fullWidth = UiUtil.getScreenMetrics(c).widthPixels;
         int width = fullWidth/2 - margin;
@@ -63,11 +65,18 @@ public class ProductViewHolder extends RecyclerView.ViewHolder  {
         mNameTv.setText(product.getName());
         mPriceTv.setText("$" + product.getPrice().intValue());
         mIv.setLayoutParams(new LinearLayout.LayoutParams(width, width));
-        mFavoriteCountTv.setText(product.getFavoriteCount()+"");
+        mFavoriteCountBtn.setText(product.getFavoriteCount()+"");
 
         if (product.getImageUrl() != null) {
             // Adapter re-use is automatically detected and the previous download canceled.
             mIv.setImageUrl(product.getImageUrl(), SYNApplication.getInstance().getImageLoader());
+        }
+        
+        if( isFavorited ) {
+            mFavoriteCountBtn.setCompoundDrawablesWithIntrinsicBounds(null, r.getDrawable(R.drawable.ic_heart_on), null, null);
+        }
+        else {
+            mFavoriteCountBtn.setCompoundDrawablesWithIntrinsicBounds(null, r.getDrawable(R.drawable.ic_heart_off), null, null);
         }
     }
 

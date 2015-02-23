@@ -9,8 +9,10 @@ import com.frankandoak.synchronization.R;
 import com.frankandoak.synchronization.adapters.listeners.ProductClickListener;
 import com.frankandoak.synchronization.adapters.viewHolders.ProductViewHolder;
 import com.frankandoak.synchronization.events.ProductClickedEvent;
+import com.frankandoak.synchronization.models.RemoteFavorite;
 import com.frankandoak.synchronization.models.RemoteProduct;
 
+import java.util.HashMap;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -21,6 +23,8 @@ import de.greenrobot.event.EventBus;
 public class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
 
     private List<RemoteProduct> mProducts;
+    private HashMap<Long,RemoteFavorite> mFavorites;
+
     private ProductClickListener mProductClickListener = new ProductClickListener() {
         @Override
         public void onClick(int position) {
@@ -29,8 +33,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
     };
 
 
-    public ProductAdapter(List<RemoteProduct> items) {
+    public ProductAdapter(List<RemoteProduct> items, HashMap<Long,RemoteFavorite> favorites) {
         mProducts = items;
+        mFavorites = favorites;
     }
 
     // Create new views (invoked by the layout manager)
@@ -52,7 +57,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
 
         RemoteProduct item = mProducts.get(position);
 
-        holder.bindViewHolder(item);
+        holder.bindViewHolder(item, mFavorites.containsKey(item.getProductId()));
 
     }
 

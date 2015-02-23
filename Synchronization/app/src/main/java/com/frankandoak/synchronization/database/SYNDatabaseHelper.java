@@ -35,6 +35,8 @@ public class SYNDatabaseHelper extends SQLiteOpenHelper {
         CategoryTable.onCreate(database);
         ProductTable.onCreate(database);
         CategoryProductTable.onCreate(database);
+        FavoriteTable.onCreate(database);
+
     }
 
     @Override
@@ -44,11 +46,9 @@ public class SYNDatabaseHelper extends SQLiteOpenHelper {
         CategoryTable.onUpgrade(database, oldVersion, newVersion);
         ProductTable.onUpgrade(database, oldVersion, newVersion);
         CategoryProductTable.onUpgrade(database, oldVersion, newVersion);
+        FavoriteTable.onUpgrade(database, oldVersion, newVersion);
+
     }
 
-    @Override
-    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        super.onDowngrade(db, oldVersion, newVersion);
-    }
 }
 

@@ -60,7 +60,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
         RemoteProduct item = mProducts.get(position);
         RemoteFavorite favorite = mFavorites.get(item.getProductId());
 
-        holder.bindViewHolder(item, favorite != null && !favorite.getIsDeleted());
+        holder.bindViewHolder(item, favorite);
 
     }
 

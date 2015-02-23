@@ -16,6 +16,8 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.frankandoak.synchronization.R;
 import com.frankandoak.synchronization.SYNApplication;
 import com.frankandoak.synchronization.adapters.listeners.ProductClickListener;
+import com.frankandoak.synchronization.models.RemoteFavorite;
+import com.frankandoak.synchronization.models.RemoteObject;
 import com.frankandoak.synchronization.models.RemoteProduct;
 import com.frankandoak.synchronization.utils.UiUtil;
 
@@ -54,7 +56,7 @@ public class ProductViewHolder extends RecyclerView.ViewHolder  {
         });
     }
 
-    public void bindViewHolder(RemoteProduct product, boolean isFavorited) {
+    public void bindViewHolder(RemoteProduct product, RemoteFavorite favorite) {
 
         Context c = SYNApplication.getContext();
         Resources r = c.getResources();
@@ -65,19 +67,28 @@ public class ProductViewHolder extends RecyclerView.ViewHolder  {
         mNameTv.setText(product.getName());
         mPriceTv.setText("$" + product.getPrice().intValue());
         mIv.setLayoutParams(new LinearLayout.LayoutParams(width, width));
-        mFavoriteCountBtn.setText(product.getFavoriteCount()+"");
+
 
         if (product.getImageUrl() != null) {
             // Adapter re-use is automatically detected and the previous download canceled.
             mIv.setImageUrl(product.getImageUrl(), SYNApplication.getInstance().getImageLoader());
         }
-        
+
+        // Favorites
+        int favoriteCount = product.getFavoriteCount();
+        boolean isFavorited = favorite != null && !favorite.getIsDeleted();
         if( isFavorited ) {
             mFavoriteCountBtn.setCompoundDrawablesWithIntrinsicBounds(null, r.getDrawable(R.drawable.ic_heart_on), null, null);
         }
         else {
             mFavoriteCountBtn.setCompoundDrawablesWithIntrinsicBounds(null, r.getDrawable(R.drawable.ic_heart_off), null, null);
         }
+
+        if( isFavorited && favorite.getSyncStatus().equals(RemoteObject.SyncStatus.QUEUED_TO_SYNC) ) {
+            ++favoriteCount;
+        }
+
+        mFavoriteCountBtn.setText(favoriteCount+"");
     }
 
 }

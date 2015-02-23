@@ -20,6 +20,8 @@ import com.frankandoak.synchronization.retrofit.responses.GetFavoritesResponse;
 import com.frankandoak.synchronization.synchronizers.CategoryProductSynchronizer;
 import com.frankandoak.synchronization.synchronizers.FavoriteSynchronizer;
 import com.frankandoak.synchronization.synchronizers.ProductSynchronizer;
+import com.frankandoak.synchronization.synchronizers.preprocessors.FavoritePreProcessor;
+import com.frankandoak.synchronization.synchronizers.preprocessors.ProductPreProcessor;
 import com.frankandoak.synchronization.utils.SyncUtil;
 
 import java.util.ArrayList;
@@ -61,7 +63,7 @@ public class SyncFavoritesService extends IntentService {
                         localProducts,
                         RemoteProduct.IDENTIFIERS,
                         new ProductSynchronizer(context, false),
-                        null
+                        new ProductPreProcessor()
                 );
                 localProducts.close();
 
@@ -86,8 +88,8 @@ public class SyncFavoritesService extends IntentService {
                 Cursor localFavorites = context.getContentResolver().query(
                         SYNContentProvider.URIS.FAVORITES_URI,
                         FavoriteTable.ALL_COLUMNS,
-                        null,
-                        null,
+                        FavoriteTable.IS_DELETED + "=?",
+                        new String[] {"0"},
                         null
                 );
                 SyncUtil.synchronize(
@@ -96,7 +98,7 @@ public class SyncFavoritesService extends IntentService {
                         localFavorites,
                         RemoteFavorite.IDENTIFIERS,
                         new FavoriteSynchronizer(context),
-                        null
+                        new FavoritePreProcessor()
                 );
                 localFavorites.close();
             }

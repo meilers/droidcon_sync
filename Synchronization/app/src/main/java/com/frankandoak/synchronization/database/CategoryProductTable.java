@@ -36,7 +36,7 @@ public class CategoryProductTable {
     private static final String DATABASE_CREATE = "create table "
             + TABLE_NAME
             + "("
-            + _ID + " integer primary key autoincrement, "
+            + _ID + " integer primary key autoincrement not null, "
             + CREATED_AT + " text,"
             + UPDATED_AT + " text,"
             + SYNC_STATUS + " integer,"

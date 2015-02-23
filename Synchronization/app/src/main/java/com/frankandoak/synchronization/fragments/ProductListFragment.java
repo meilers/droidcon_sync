@@ -1,5 +1,7 @@
 package com.frankandoak.synchronization.fragments;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -27,6 +29,7 @@ import com.frankandoak.synchronization.database.ProductTable;
 import com.frankandoak.synchronization.events.ProductClickedEvent;
 import com.frankandoak.synchronization.models.RemoteCategory;
 import com.frankandoak.synchronization.models.RemoteFavorite;
+import com.frankandoak.synchronization.models.RemoteObject;
 import com.frankandoak.synchronization.models.RemoteProduct;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
 import com.frankandoak.synchronization.utils.ArrayUtil;
@@ -182,7 +185,25 @@ public class ProductListFragment extends Fragment implements LoaderManager.Loade
 
     public void onEventMainThread(ProductClickedEvent event) {
 
+        RemoteProduct product = event.getProduct();
+        RemoteFavorite favorite = event.getFavorite();
+        ContentResolver resolver = getActivity().getContentResolver();
+        ContentValues values = new ContentValues();
 
+        if( favorite == null ) {
+            favorite = new RemoteFavorite(null, null, null,RemoteObject.SyncStatus.QUEUED_TO_SYNC, null, product.getProductId());
+            favorite.populateContentValues(values);
+            resolver.insert(SYNContentProvider.URIS.FAVORITES_URI, values);
+        }
+        else {
 
+            favorite.setIsDeleted(!favorite.getIsDeleted());
+            favorite.populateContentValues(values);
+            resolver.update(SYNContentProvider.URIS.FAVORITES_URI, values, FavoriteTable.PRODUCT_ID + "=?", new String[]{favorite.getProductId() + ""});
+        }
+
+        resolver.notifyChange(SYNContentProvider.URIS.FAVORITES_URI, null);
+        resolver.notifyChange(SYNContentProvider.URIS.FAVORITE_PRODUCTS_URI, null);
+        resolver.notifyChange(SYNContentProvider.URIS.CATEGORY_PRODUCTS_URI, null);
     }
 }

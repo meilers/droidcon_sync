@@ -2,6 +2,7 @@ package com.frankandoak.synchronization.synchronizers.preprocessors;
 
 
 import com.frankandoak.synchronization.models.RemoteCategory;
+import com.frankandoak.synchronization.models.RemoteObject;
 import com.frankandoak.synchronization.models.RemoteProduct;
 
 import java.util.List;
@@ -17,8 +18,10 @@ public class CategoryPreProcessor extends BasePreProcessor<RemoteCategory> {
         int i = 0;
         for( RemoteCategory catProduct : records ) {
             if( catProduct != null ) {
-                catProduct.setPosition(i);
+                catProduct.setIsDeleted(false);
+                catProduct.setSyncStatus(RemoteObject.SyncStatus.NO_CHANGES);
 
+                catProduct.setPosition(i);
                 ++i;
             }
         }

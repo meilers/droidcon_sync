@@ -1,5 +1,6 @@
 package com.frankandoak.synchronization.events;
 
+import com.frankandoak.synchronization.models.RemoteFavorite;
 import com.frankandoak.synchronization.models.RemoteProduct;
 
 /**
@@ -8,13 +9,18 @@ import com.frankandoak.synchronization.models.RemoteProduct;
 public class ProductClickedEvent {
 
     private RemoteProduct mProduct;
+    private RemoteFavorite mFavorite;
 
-
-    public ProductClickedEvent(RemoteProduct product) {
-        this.mProduct = product;
+    public ProductClickedEvent(RemoteProduct product, RemoteFavorite favorite) {
+        mProduct = product;
+        mFavorite = favorite;
     }
 
     public RemoteProduct getProduct() {
         return mProduct;
+    }
+
+    public RemoteFavorite getFavorite() {
+        return mFavorite;
     }
 }

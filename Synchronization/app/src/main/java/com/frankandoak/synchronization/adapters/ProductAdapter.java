@@ -28,7 +28,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
     private ProductClickListener mProductClickListener = new ProductClickListener() {
         @Override
         public void onClick(int position) {
-            EventBus.getDefault().post(new ProductClickedEvent(mProducts.get(position)));
+
+            RemoteProduct product = mProducts.get(position);
+            EventBus.getDefault().post(new ProductClickedEvent(product, mFavorites.get(product.getProductId())));
         }
     };
 
@@ -56,8 +58,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
         // - replace the contents of the view with that element
 
         RemoteProduct item = mProducts.get(position);
+        RemoteFavorite favorite = mFavorites.get(item.getProductId());
 
-        holder.bindViewHolder(item, mFavorites.containsKey(item.getProductId()));
+        holder.bindViewHolder(item, favorite != null && !favorite.getIsDeleted());
 
     }
 

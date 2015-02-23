@@ -56,7 +56,7 @@ public class FavoriteSynchronizer extends BaseSynchronizer<RemoteFavorite>{
         for (Long id : deletions) {
             ContentProviderOperation op = ContentProviderOperation
                     .newDelete(SYNContentProvider.URIS.FAVORITES_URI)
-                    .withSelection(CategoryTable._ID + " = ?", new String[]{String.valueOf(id)})
+                    .withSelection(FavoriteTable._ID + " = ?", new String[]{String.valueOf(id)})
                     .build();
 
             operations.add(op);

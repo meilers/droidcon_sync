@@ -58,7 +58,7 @@ public class CategoryProductSynchronizer extends BaseSynchronizer<RemoteCategory
         for (Long id : deletions) {
             ContentProviderOperation op = ContentProviderOperation
                     .newDelete(SYNContentProvider.URIS.CATEGORY_PRODUCTS_URI)
-                    .withSelection(CategoryTable._ID + " = ?", new String[]{String.valueOf(id)})
+                    .withSelection(CategoryProductTable._ID + " = ?", new String[]{String.valueOf(id)})
                     .build();
 
             operations.add(op);

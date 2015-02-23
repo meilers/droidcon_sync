@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.frankandoak.synchronization.database.CategoryProductTable;
 import com.frankandoak.synchronization.database.CategoryTable;
@@ -33,7 +34,7 @@ public class SYNContentProvider extends ContentProvider {
 
         public static final Uri CATEGORIES_URI = Uri.parse(SCHEME + "://" + AUTHORITY + "/" + Paths.CATEGORIES);
         public static final Uri PRODUCTS_URI = Uri.parse(SCHEME + "://" + AUTHORITY + "/" + Paths.PRODUCTS);
-        public static final Uri FAVORITES_URI = Uri.parse(SCHEME + "://" + AUTHORITY + "/" + Paths.FAVORITE_PRODUCTS);
+        public static final Uri FAVORITES_URI = Uri.parse(SCHEME + "://" + AUTHORITY + "/" + Paths.FAVORITES);
         public static final Uri CATEGORY_PRODUCTS_URI = Uri.parse(SCHEME + "://" + AUTHORITY + "/" + Paths.CATEGORY_PRODUCTS);
         public static final Uri FAVORITE_PRODUCTS_URI = Uri.parse(SCHEME + "://" + AUTHORITY + "/" + Paths.FAVORITE_PRODUCTS);
 
@@ -216,6 +217,33 @@ public class SYNContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
+        int uriType = sURIMatcher.match(uri);
+        SQLiteDatabase dbConnection = database.getWritableDatabase();
+
+        try {
+            dbConnection.beginTransaction();
+
+            switch (uriType) {
+                case FAVORITES_DIR:
+                case FAVORITE_ID:
+                    final long favoriteId = dbConnection.insertOrThrow(
+                            FavoriteTable.TABLE_NAME, null, values);
+                    final Uri newCategory = ContentUris.withAppendedId(
+                            URIS.FAVORITES_URI, favoriteId);
+                    dbConnection.setTransactionSuccessful();
+                    return newCategory;
+
+
+                default:
+                    throw new IllegalArgumentException("Unknown URI: " + uri);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "Insert Exception", e);
+        } finally {
+            dbConnection.endTransaction();
+        }
+
         return null;
     }
 

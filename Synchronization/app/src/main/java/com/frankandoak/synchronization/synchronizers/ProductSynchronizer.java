@@ -86,13 +86,15 @@ public class ProductSynchronizer extends BaseSynchronizer<RemoteProduct>{
 
     protected boolean isRemoteEntityNewerThanLocal(RemoteProduct remote, Cursor c) {
         try {
-            Calendar remoteUpdatedTime = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            Calendar remoteUpdatedTime = DateUtil.convertToDate(remote.getUpdatedAt());
             Calendar localUpdatedTime = DateUtil.convertToDate(c.getString(c.getColumnIndex(ProductTable.UPDATED_AT)));
 
             if( remoteUpdatedTime == null || localUpdatedTime == null )
                 return true;
 
-            return remoteUpdatedTime.getTimeInMillis() > localUpdatedTime.getTimeInMillis();
+            boolean isNewer = remoteUpdatedTime.getTimeInMillis() > localUpdatedTime.getTimeInMillis();
+
+            return isNewer;
 
         }
         catch(Exception e) {

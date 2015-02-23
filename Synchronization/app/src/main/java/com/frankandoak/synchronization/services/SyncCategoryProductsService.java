@@ -17,6 +17,8 @@ import com.frankandoak.synchronization.retrofit.responses.GetCategoryProductsRes
 import com.frankandoak.synchronization.retrofit.FAOApiClientManager;
 import com.frankandoak.synchronization.synchronizers.CategoryProductSynchronizer;
 import com.frankandoak.synchronization.synchronizers.ProductSynchronizer;
+import com.frankandoak.synchronization.synchronizers.preprocessors.CategoryProductPreProcessor;
+import com.frankandoak.synchronization.synchronizers.preprocessors.ProductPreProcessor;
 import com.frankandoak.synchronization.utils.SyncUtil;
 
 import java.util.ArrayList;
@@ -63,7 +65,7 @@ public class SyncCategoryProductsService extends IntentService {
                         localProducts,
                         RemoteProduct.IDENTIFIERS,
                         new ProductSynchronizer(context, false),
-                        null
+                        new ProductPreProcessor()
                 );
                 localProducts.close();
 
@@ -100,7 +102,7 @@ public class SyncCategoryProductsService extends IntentService {
                         localCategoryProducts,
                         RemoteCategoryProduct.IDENTIFIERS,
                         new CategoryProductSynchronizer(context),
-                        null
+                        new CategoryProductPreProcessor()
                 );
                 localCategoryProducts.close();
             }

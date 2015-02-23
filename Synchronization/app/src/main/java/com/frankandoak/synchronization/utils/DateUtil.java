@@ -13,7 +13,7 @@ public class DateUtil {
     public static Calendar convertToDate(String date)
     {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date convertedDate = new Date();
             try {
                 convertedDate = sdf.parse(date);

@@ -1,4 +1,4 @@
-package com.frankandoak.synchronization.synchronizers.preprocessors;
+package com.frankandoak.synchronization.sync.synchronizers.preprocessors;
 
 import com.frankandoak.synchronization.models.RemoteObject;
 

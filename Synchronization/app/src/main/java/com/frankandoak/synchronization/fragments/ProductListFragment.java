@@ -2,7 +2,6 @@ package com.frankandoak.synchronization.fragments;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,7 +10,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,10 +18,8 @@ import android.view.ViewGroup;
 
 import com.frankandoak.synchronization.R;
 import com.frankandoak.synchronization.SYNConstants;
-import com.frankandoak.synchronization.activities.ProductListActivity;
-import com.frankandoak.synchronization.adapters.ProductAdapter;
+import com.frankandoak.synchronization.views.adapters.ProductAdapter;
 import com.frankandoak.synchronization.database.CategoryProductTable;
-import com.frankandoak.synchronization.database.CategoryTable;
 import com.frankandoak.synchronization.database.FavoriteTable;
 import com.frankandoak.synchronization.database.ProductTable;
 import com.frankandoak.synchronization.events.ProductClickedEvent;
@@ -33,7 +29,6 @@ import com.frankandoak.synchronization.models.RemoteObject;
 import com.frankandoak.synchronization.models.RemoteProduct;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
 import com.frankandoak.synchronization.utils.ArrayUtil;
-import com.frankandoak.synchronization.views.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -191,12 +186,12 @@ public class ProductListFragment extends Fragment implements LoaderManager.Loade
         ContentValues values = new ContentValues();
 
         if( favorite == null ) {
-            favorite = new RemoteFavorite(null, null, null,RemoteObject.SyncStatus.QUEUED_TO_SYNC, null, product.getProductId());
+            favorite = new RemoteFavorite(null, null, null,RemoteObject.SyncStatus.QUEUED_TO_SYNC, false, product.getProductId());
             favorite.populateContentValues(values);
             resolver.insert(SYNContentProvider.URIS.FAVORITES_URI, values);
         }
         else {
-
+            favorite.setSyncStatus(RemoteObject.SyncStatus.QUEUED_TO_SYNC);
             favorite.setIsDeleted(!favorite.getIsDeleted());
             favorite.populateContentValues(values);
             resolver.update(SYNContentProvider.URIS.FAVORITES_URI, values, FavoriteTable.PRODUCT_ID + "=?", new String[]{favorite.getProductId() + ""});

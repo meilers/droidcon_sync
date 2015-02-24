@@ -15,10 +15,10 @@ import com.frankandoak.synchronization.providers.SYNContentProvider;
 import com.frankandoak.synchronization.retrofit.clients.GetCategoryProductsClient;
 import com.frankandoak.synchronization.retrofit.responses.GetCategoryProductsResponse;
 import com.frankandoak.synchronization.retrofit.FAOApiClientManager;
-import com.frankandoak.synchronization.synchronizers.CategoryProductSynchronizer;
-import com.frankandoak.synchronization.synchronizers.ProductSynchronizer;
-import com.frankandoak.synchronization.synchronizers.preprocessors.CategoryProductPreProcessor;
-import com.frankandoak.synchronization.synchronizers.preprocessors.ProductPreProcessor;
+import com.frankandoak.synchronization.sync.synchronizers.CategoryProductSynchronizer;
+import com.frankandoak.synchronization.sync.synchronizers.ProductSynchronizer;
+import com.frankandoak.synchronization.sync.synchronizers.preprocessors.CategoryProductPreProcessor;
+import com.frankandoak.synchronization.sync.synchronizers.preprocessors.ProductPreProcessor;
 import com.frankandoak.synchronization.utils.SyncUtil;
 
 import java.util.ArrayList;

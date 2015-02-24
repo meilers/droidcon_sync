@@ -1,4 +1,4 @@
-package com.frankandoak.synchronization.synchronizers;
+package com.frankandoak.synchronization.sync.synchronizers;
 
 import android.content.ContentProviderOperation;
 import android.content.Context;
@@ -9,10 +9,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.RemoteException;
 
 import com.frankandoak.synchronization.SYNApplication;
+import com.frankandoak.synchronization.database.CategoryProductTable;
 import com.frankandoak.synchronization.database.FavoriteTable;
-import com.frankandoak.synchronization.database.CategoryTable;
 import com.frankandoak.synchronization.database.SYNDatabaseHelper;
 import com.frankandoak.synchronization.models.RemoteFavorite;
+import com.frankandoak.synchronization.models.RemoteObject;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
 import com.frankandoak.synchronization.utils.DateUtil;
 import com.frankandoak.synchronization.utils.SyncUtil;
@@ -25,7 +26,7 @@ import java.util.TimeZone;
 /**
  * Created by Michael on 2014-03-17.
  */
-public class FavoriteSynchronizer extends BaseSynchronizer<RemoteFavorite>{
+public class FavoriteSynchronizer extends BaseSynchronizer<RemoteFavorite> {
 
     private static final String TAG = FavoriteSynchronizer.class.getSimpleName();
 
@@ -56,15 +57,15 @@ public class FavoriteSynchronizer extends BaseSynchronizer<RemoteFavorite>{
         for (Long id : deletions) {
             ContentProviderOperation op = ContentProviderOperation
                     .newDelete(SYNContentProvider.URIS.FAVORITES_URI)
-                    .withSelection(FavoriteTable._ID + " = ?", new String[]{String.valueOf(id)})
+                    .withSelection(FavoriteTable._ID + " = ? AND (" + FavoriteTable.SYNC_STATUS + "=? OR " + FavoriteTable.IS_DELETED + "=?)",
+                            new String[]{String.valueOf(id), RemoteObject.SyncStatus.NO_CHANGES.ordinal() + "", "1"})
                     .build();
 
             operations.add(op);
         }
 
         try {
-            if( inserts.size() > 0 || operations.size() > 0 )
-            {
+            if( inserts.size() > 0 || operations.size() > 0 ) {
                 context.getContentResolver().applyBatch(SYNContentProvider.AUTHORITY, operations);
                 context.getContentResolver().notifyChange(SYNContentProvider.URIS.FAVORITES_URI, null);
                 context.getContentResolver().notifyChange(SYNContentProvider.URIS.FAVORITE_PRODUCTS_URI, null);
@@ -85,7 +86,9 @@ public class FavoriteSynchronizer extends BaseSynchronizer<RemoteFavorite>{
             if( remoteUpdatedTime == null || localUpdatedTime == null )
                 return true;
 
-            return remoteUpdatedTime.getTimeInMillis() > localUpdatedTime.getTimeInMillis();
+            RemoteObject.SyncStatus localSyncStatus = RemoteObject.SyncStatus.getSyncStatusFromCode(c.getInt(c.getColumnIndex(FavoriteTable.SYNC_STATUS)));
+
+            return (remoteUpdatedTime.getTimeInMillis() > localUpdatedTime.getTimeInMillis()) && !localSyncStatus.equals(RemoteObject.SyncStatus.QUEUED_TO_SYNC);
 
         }
         catch(Exception e) {

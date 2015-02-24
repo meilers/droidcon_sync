@@ -4,8 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.frankandoak.synchronization.models.RemoteObject;
-import com.frankandoak.synchronization.synchronizers.BaseSynchronizer;
-import com.frankandoak.synchronization.synchronizers.preprocessors.BasePreProcessor;
+import com.frankandoak.synchronization.sync.synchronizers.BaseSynchronizer;
+import com.frankandoak.synchronization.sync.synchronizers.preprocessors.BasePreProcessor;
 
 import java.util.Collection;
 import java.util.Iterator;

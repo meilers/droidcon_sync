@@ -1,4 +1,4 @@
-package com.frankandoak.synchronization.synchronizers;
+package com.frankandoak.synchronization.sync.synchronizers;
 
 import android.content.ContentValues;
 import android.content.Context;

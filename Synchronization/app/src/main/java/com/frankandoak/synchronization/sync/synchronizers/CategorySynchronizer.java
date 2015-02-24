@@ -1,4 +1,4 @@
-package com.frankandoak.synchronization.synchronizers;
+package com.frankandoak.synchronization.sync.synchronizers;
 
 import android.content.ContentProviderOperation;
 import android.content.Context;
@@ -11,22 +11,24 @@ import android.os.RemoteException;
 import com.frankandoak.synchronization.SYNApplication;
 import com.frankandoak.synchronization.database.CategoryProductTable;
 import com.frankandoak.synchronization.database. CategoryTable;
+import com.frankandoak.synchronization.database.FavoriteTable;
 import com.frankandoak.synchronization.database.SYNDatabaseHelper;
 import com.frankandoak.synchronization.models.RemoteCategory;
-import com.frankandoak.synchronization.models.RemoteCategory;
+import com.frankandoak.synchronization.models.RemoteObject;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
 import com.frankandoak.synchronization.utils.DateUtil;
 import com.frankandoak.synchronization.utils.SyncUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TimeZone;
 
 /**
  * Created by Michael on 2014-03-17.
  */
-public class CategorySynchronizer extends BaseSynchronizer<RemoteCategory>{
+public class CategorySynchronizer extends BaseSynchronizer<RemoteCategory> {
 
     private static final String TAG = CategorySynchronizer.class.getSimpleName();
 
@@ -57,8 +59,8 @@ public class CategorySynchronizer extends BaseSynchronizer<RemoteCategory>{
         for (Long id : deletions) {
             ContentProviderOperation op = ContentProviderOperation
                     .newDelete(SYNContentProvider.URIS.CATEGORIES_URI)
-                    .withSelection(CategoryTable._ID + " = ?", new String[]{String.valueOf(id)})
-                    .build();
+                    .withSelection(CategoryTable._ID + " = ? AND (" + CategoryTable.SYNC_STATUS + "=? OR " + CategoryTable.IS_DELETED + "=?)",
+                            new String[]{String.valueOf(id), RemoteObject.SyncStatus.NO_CHANGES.ordinal()+"", "1"})                    .build();
 
             operations.add(op);
         }
@@ -85,7 +87,9 @@ public class CategorySynchronizer extends BaseSynchronizer<RemoteCategory>{
             if( remoteUpdatedTime == null || localUpdatedTime == null )
                 return true;
 
-            return remoteUpdatedTime.getTimeInMillis() > localUpdatedTime.getTimeInMillis();
+            RemoteObject.SyncStatus localSyncStatus = RemoteObject.SyncStatus.getSyncStatusFromCode(c.getInt(c.getColumnIndex(CategoryTable.SYNC_STATUS)));
+
+            return (remoteUpdatedTime.getTimeInMillis() > localUpdatedTime.getTimeInMillis()) && !localSyncStatus.equals(RemoteObject.SyncStatus.QUEUED_TO_SYNC);
 
         }
         catch(Exception e) {

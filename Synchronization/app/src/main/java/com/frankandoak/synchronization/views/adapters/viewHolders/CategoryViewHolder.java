@@ -1,4 +1,4 @@
-package com.frankandoak.synchronization.adapters.viewHolders;
+package com.frankandoak.synchronization.views.adapters.viewHolders;
 
 /**
  * Created by mj_eilers on 15-02-19.
@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.frankandoak.synchronization.R;
 import com.frankandoak.synchronization.SYNApplication;
-import com.frankandoak.synchronization.adapters.listeners.CategoryClickListener;
+import com.frankandoak.synchronization.views.adapters.listeners.CategoryClickListener;
 import com.frankandoak.synchronization.models.RemoteCategory;
 import com.frankandoak.synchronization.utils.UiUtil;
 

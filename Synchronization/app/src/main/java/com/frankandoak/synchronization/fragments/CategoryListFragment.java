@@ -16,15 +16,12 @@ import android.view.ViewGroup;
 
 import com.frankandoak.synchronization.R;
 import com.frankandoak.synchronization.SYNConstants;
-import com.frankandoak.synchronization.activities.CategoryListActivity;
 import com.frankandoak.synchronization.activities.ProductListActivity;
-import com.frankandoak.synchronization.adapters.CategoryAdapter;
+import com.frankandoak.synchronization.views.adapters.CategoryAdapter;
 import com.frankandoak.synchronization.database.CategoryTable;
-import com.frankandoak.synchronization.database.ProductTable;
 import com.frankandoak.synchronization.events.CategoryClickedEvent;
 import com.frankandoak.synchronization.models.RemoteCategory;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
-import com.frankandoak.synchronization.views.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;

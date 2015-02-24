@@ -1,4 +1,4 @@
-package com.frankandoak.synchronization.adapters.listeners;
+package com.frankandoak.synchronization.views.adapters.listeners;
 
 /**
  * Created by mj_eilers on 15-02-19.

@@ -1,4 +1,4 @@
-package com.frankandoak.synchronization.adapters;
+package com.frankandoak.synchronization.views.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.frankandoak.synchronization.R;
-import com.frankandoak.synchronization.adapters.listeners.CategoryClickListener;
-import com.frankandoak.synchronization.adapters.viewHolders.CategoryViewHolder;
+import com.frankandoak.synchronization.views.adapters.listeners.CategoryClickListener;
+import com.frankandoak.synchronization.views.adapters.viewHolders.CategoryViewHolder;
 import com.frankandoak.synchronization.events.CategoryClickedEvent;
 import com.frankandoak.synchronization.models.RemoteCategory;
 

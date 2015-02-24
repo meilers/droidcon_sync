@@ -1,9 +1,8 @@
-package com.frankandoak.synchronization.synchronizers.preprocessors;
+package com.frankandoak.synchronization.sync.synchronizers.preprocessors;
 
 
 import com.frankandoak.synchronization.models.RemoteCategory;
 import com.frankandoak.synchronization.models.RemoteObject;
-import com.frankandoak.synchronization.models.RemoteProduct;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.frankandoak.synchronization.synchronizers;
+package com.frankandoak.synchronization.sync.synchronizers;
 
 import android.content.ContentProviderOperation;
 import android.content.Context;
@@ -10,8 +10,11 @@ import android.os.RemoteException;
 
 
 import com.frankandoak.synchronization.SYNApplication;
+import com.frankandoak.synchronization.database.CategoryProductTable;
+import com.frankandoak.synchronization.database.FavoriteTable;
 import com.frankandoak.synchronization.database.ProductTable;
 import com.frankandoak.synchronization.database.SYNDatabaseHelper;
+import com.frankandoak.synchronization.models.RemoteObject;
 import com.frankandoak.synchronization.models.RemoteProduct;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
 import com.frankandoak.synchronization.utils.DateUtil;
@@ -20,12 +23,11 @@ import com.frankandoak.synchronization.utils.SyncUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Created by Michael on 2014-03-17.
  */
-public class ProductSynchronizer extends BaseSynchronizer<RemoteProduct>{
+public class ProductSynchronizer extends BaseSynchronizer<RemoteProduct> {
 
     private static final String TAG = ProductSynchronizer.class.getSimpleName();
 
@@ -43,8 +45,7 @@ public class ProductSynchronizer extends BaseSynchronizer<RemoteProduct>{
 
         ArrayList<ContentProviderOperation> operations = new ArrayList<>();
 
-        if( inserts.size() > 0 )
-        {
+        if( inserts.size() > 0 ) {
             doBulkInsertOptimised(inserts);
         }
 
@@ -62,7 +63,8 @@ public class ProductSynchronizer extends BaseSynchronizer<RemoteProduct>{
             for (Long id : deletions) {
                 ContentProviderOperation op = ContentProviderOperation
                         .newDelete(SYNContentProvider.URIS.PRODUCTS_URI)
-                        .withSelection(ProductTable._ID + " = ?", new String[] { String.valueOf(id) })
+                        .withSelection(ProductTable._ID + " = ? AND (" + ProductTable.SYNC_STATUS + "=? OR " + ProductTable.IS_DELETED + "=?)",
+                                new String[]{String.valueOf(id), RemoteObject.SyncStatus.NO_CHANGES.ordinal() + "", "1"})
                         .build();
 
                 operations.add(op);
@@ -71,8 +73,7 @@ public class ProductSynchronizer extends BaseSynchronizer<RemoteProduct>{
 
 
         try {
-            if( inserts.size() > 0 || operations.size() > 0 )
-            {
+            if( inserts.size() > 0 || operations.size() > 0 ) {
                 context.getContentResolver().applyBatch(SYNContentProvider.AUTHORITY, operations);
                 context.getContentResolver().notifyChange(SYNContentProvider.URIS.PRODUCTS_URI, null);
             }
@@ -92,9 +93,10 @@ public class ProductSynchronizer extends BaseSynchronizer<RemoteProduct>{
             if( remoteUpdatedTime == null || localUpdatedTime == null )
                 return true;
 
-            boolean isNewer = remoteUpdatedTime.getTimeInMillis() > localUpdatedTime.getTimeInMillis();
+            RemoteObject.SyncStatus localSyncStatus = RemoteObject.SyncStatus.getSyncStatusFromCode(c.getInt(c.getColumnIndex(ProductTable.SYNC_STATUS)));
 
-            return isNewer;
+            return (remoteUpdatedTime.getTimeInMillis() > localUpdatedTime.getTimeInMillis()) && !localSyncStatus.equals(RemoteObject.SyncStatus.QUEUED_TO_SYNC);
+
 
         }
         catch(Exception e) {

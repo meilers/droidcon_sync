@@ -4,12 +4,11 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.frankandoak.synchronization.SYNApplication;
-import com.frankandoak.synchronization.database.CategoryProductTable;
 import com.frankandoak.synchronization.database.FavoriteTable;
 import com.frankandoak.synchronization.database.ProductTable;
-import com.frankandoak.synchronization.models.RemoteCategoryProduct;
 import com.frankandoak.synchronization.models.RemoteObject;
 import com.frankandoak.synchronization.models.RemoteFavorite;
 import com.frankandoak.synchronization.models.RemoteProduct;
@@ -17,11 +16,10 @@ import com.frankandoak.synchronization.providers.SYNContentProvider;
 import com.frankandoak.synchronization.retrofit.FAOApiClientManager;
 import com.frankandoak.synchronization.retrofit.clients.GetFavoritesClient;
 import com.frankandoak.synchronization.retrofit.responses.GetFavoritesResponse;
-import com.frankandoak.synchronization.synchronizers.CategoryProductSynchronizer;
-import com.frankandoak.synchronization.synchronizers.FavoriteSynchronizer;
-import com.frankandoak.synchronization.synchronizers.ProductSynchronizer;
-import com.frankandoak.synchronization.synchronizers.preprocessors.FavoritePreProcessor;
-import com.frankandoak.synchronization.synchronizers.preprocessors.ProductPreProcessor;
+import com.frankandoak.synchronization.sync.synchronizers.FavoriteSynchronizer;
+import com.frankandoak.synchronization.sync.synchronizers.ProductSynchronizer;
+import com.frankandoak.synchronization.sync.synchronizers.preprocessors.FavoritePreProcessor;
+import com.frankandoak.synchronization.sync.synchronizers.preprocessors.ProductPreProcessor;
 import com.frankandoak.synchronization.utils.SyncUtil;
 
 import java.util.ArrayList;
@@ -88,8 +86,8 @@ public class SyncFavoritesService extends IntentService {
                 Cursor localFavorites = context.getContentResolver().query(
                         SYNContentProvider.URIS.FAVORITES_URI,
                         FavoriteTable.ALL_COLUMNS,
-                        FavoriteTable.IS_DELETED + "=?",
-                        new String[] {"0"},
+                        null,
+                        null,
                         null
                 );
                 SyncUtil.synchronize(

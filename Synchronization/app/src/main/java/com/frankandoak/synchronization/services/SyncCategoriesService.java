@@ -7,14 +7,13 @@ import android.database.Cursor;
 
 import com.frankandoak.synchronization.SYNApplication;
 import com.frankandoak.synchronization.database.CategoryTable;
-import com.frankandoak.synchronization.database.ProductTable;
 import com.frankandoak.synchronization.models.RemoteCategory;
 import com.frankandoak.synchronization.providers.SYNContentProvider;
 import com.frankandoak.synchronization.retrofit.FAOApiClientManager;
 import com.frankandoak.synchronization.retrofit.clients.GetCategoriesClient;
 import com.frankandoak.synchronization.retrofit.responses.GetCategoriesResponse;
-import com.frankandoak.synchronization.synchronizers.CategorySynchronizer;
-import com.frankandoak.synchronization.synchronizers.preprocessors.CategoryPreProcessor;
+import com.frankandoak.synchronization.sync.synchronizers.CategorySynchronizer;
+import com.frankandoak.synchronization.sync.synchronizers.preprocessors.CategoryPreProcessor;
 import com.frankandoak.synchronization.utils.SyncUtil;
 
 import java.util.List;

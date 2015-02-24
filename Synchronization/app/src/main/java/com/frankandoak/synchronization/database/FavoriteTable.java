@@ -35,8 +35,8 @@ public class FavoriteTable {
             + _ID + " integer primary key autoincrement not null, "
             + CREATED_AT + " text,"
             + UPDATED_AT + " text,"
-            + SYNC_STATUS + " integer,"
-            + IS_DELETED + " integer,"
+            + SYNC_STATUS + " integer not null,"
+            + IS_DELETED + " integer not null,"
             + PRODUCT_ID + " integer not null"
 
             + ");";

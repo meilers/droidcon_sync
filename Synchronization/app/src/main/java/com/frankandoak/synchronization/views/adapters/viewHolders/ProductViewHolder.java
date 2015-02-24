@@ -1,4 +1,4 @@
-package com.frankandoak.synchronization.adapters.viewHolders;
+package com.frankandoak.synchronization.views.adapters.viewHolders;
 
 /**
  * Created by mj_eilers on 15-02-19.
@@ -8,14 +8,13 @@ import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.frankandoak.synchronization.R;
 import com.frankandoak.synchronization.SYNApplication;
-import com.frankandoak.synchronization.adapters.listeners.ProductClickListener;
+import com.frankandoak.synchronization.views.adapters.listeners.ProductClickListener;
 import com.frankandoak.synchronization.models.RemoteFavorite;
 import com.frankandoak.synchronization.models.RemoteObject;
 import com.frankandoak.synchronization.models.RemoteProduct;

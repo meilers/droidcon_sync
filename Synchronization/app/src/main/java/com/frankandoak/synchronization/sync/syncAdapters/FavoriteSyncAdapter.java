@@ -62,8 +62,8 @@ public class FavoriteSyncAdapter extends AbstractThreadedSyncAdapter {
 
         try {
 
-            HashMap<String,RemoteFavorite> productSkusToAdd = new HashMap<>();
-            HashMap<String,RemoteFavorite> productSkusToDelete = new HashMap<>();
+            HashMap<String,RemoteFavorite> productSkusToAdd = new HashMap();
+            HashMap<String,RemoteFavorite> productSkusToDelete = new HashMap();
             RemoteProduct product;
             RemoteFavorite favorite;
 
